@@ -63,7 +63,7 @@ Write a mid-project individual status update
 Participate in Peer Evaluation 1
 
 ### Week 5 
-Complete Sprint 2
+Complete Sprint 2.
 
 ### Week 6
 Conduct a user study on your Sprint 2 prototype, write your user study report
