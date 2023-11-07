@@ -1,10 +1,11 @@
+
 <template>
   <div>
     <TopRibbonTab /><!-- Include the TopRibbonTab component -->
-
     <!-- Carousel component for new drinks and deals -->
     <Carousel :items="carouselItems" />
   </div>
+
 </template>
 
 <script>
