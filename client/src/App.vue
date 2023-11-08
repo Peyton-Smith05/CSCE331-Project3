@@ -3,7 +3,7 @@
   <div>
     <TopRibbonTab /><!-- Include the TopRibbonTab component -->
     <!-- Carousel component for new drinks and deals -->
-
+    <Menu />
     <router-view>
 
     </router-view>
@@ -12,11 +12,13 @@
 </template>
 
 <script>
-import TopRibbonTab from './TopRibbonTab.vue'; // Import the TopRibbonTab component
+import TopRibbonTab from './TopRibbonTab.vue';
+import Menu from './components/Menu.vue';
 
 export default {
   components: {
-    TopRibbonTab
+    TopRibbonTab,
+    Menu
   },
 };
 </script>
