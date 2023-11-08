@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
 require('dotenv').config();
 
 const path = __dirname + "/../client/dist/";
@@ -144,9 +143,9 @@ app.get('/menu-items/category', async (req, res) => {
 });
 
 // Define the port
-const PORT = process.env.PORT || 3000;
+const PORT =  3000;
 
 // Start the server
-app.listen(process.env.PORT || 8081, () => {
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
