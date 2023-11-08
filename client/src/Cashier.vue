@@ -39,8 +39,7 @@
   </template>
   
   <script>
-import axios from 'axios';
-
+  import axios from 'axios';
   export default {
     data() {
       return {
@@ -55,13 +54,25 @@ import axios from 'axios';
         selectedCategory: 0,
       };
     },
+    created() {
+      this.fetchCategory();
+    },
     methods: {
+      async fetchCategory() {
+        try {
+          const response = await axios.get('/menu-items/category');
+          this.menu = response.data;
+        } catch (error) {
+          console.error(error);
+          this.error = 'Failed to load users.';
+        }
+      },
       addItemToOrder(menuItem) {
         //if (menuItem.quantity > 0) {
           const existingItem = this.orderedItems.find(
             (item) => item.id === menuItem.id
           );
-  
+
           if (existingItem) {
             existingItem.quantity++;
           } else {
