@@ -1,10 +1,13 @@
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
 require('dotenv').config();
 
+const path = __dirname + "/../client/";
 const app = express();
 
 // Middleware
+app.use(express.static(path));
 app.use(cors());
 app.use(express.json()); // for parsing application/json
 
@@ -19,6 +22,11 @@ const pool = new Pool({
     ssl: {rejectUnauthorized: false}
 });
 
+
+// Initial API point to access landing page.
+app.get('/', async (req, res) => {
+  res.sendFile(path + "index.html");
+});
 
 // API endpoint to get users
 app.get('/api/menu-items', async (req, res) => {
@@ -46,7 +54,6 @@ app.get('/api/orders', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 // Start the server
-app.listen(PORT, () => {
+app.listen(process.env.PORT || 8081, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
-
