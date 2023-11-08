@@ -1,11 +1,14 @@
+
 <template>
   <div>
     <TopRibbonTab /><!-- Include the TopRibbonTab component -->
     <!-- Carousel component for new drinks and deals -->
+
     <router-view>
 
     </router-view>
   </div>
+
 </template>
 
 <script>
