@@ -22,12 +22,6 @@ const pool = new Pool({
     ssl: {rejectUnauthorized: false}
 });
 
-
-// Initial API point to access landing page.
-app.get('/', async (req, res) => {
-  res.sendFile(path + "index.html");
-});
-
 // API endpoint to get users
 app.get('/api/menu-items', async (req, res) => {
   try {
