@@ -3,7 +3,7 @@
   <div>
     <TopRibbonTab /><!-- Include the TopRibbonTab component -->
     <!-- Carousel component for new drinks and deals -->
-    <Menu />
+    <!-- <Menu /> -->
     <router-view>
 
     </router-view>

@@ -22,13 +22,8 @@ const pool = new Pool({
 });
 
 
-// Initial API point to access landing page.
-app.get('/', async (req, res) => {
-  res.sendFile(path + "index.html");
-});
-
-// API endpoint to get whats new menu items
-app.get('/menu-items/whats-new', async (req, res) => {
+// API endpoint to get users
+app.get('/api/menu-items', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'what\'\'s new\'');
     res.json(rows);
