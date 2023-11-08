@@ -130,10 +130,10 @@ app.get('/menu-items/milk-strike', async (req, res) => {
   }
 });
 
-// API endpoint to get users
-app.get('/api/orders', async (req, res) => {
+// API endpoint to get menu categories
+app.get('/menu-items/category', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM order_log');
+    const { rows } = await pool.query('SELECT DISTINCT category FROM menu');
     res.json(rows);
   } catch (err) {
     console.error(err.message);
