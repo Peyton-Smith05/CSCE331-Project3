@@ -65,7 +65,7 @@
     methods: {
       async fetchCategory() {
         try {
-          const response = await axios.get('http://localhost:3000/menu-items/category');
+          const response = await axios.get('/menu-items/category');
           this.menu = response.data;
         } catch (error) {
           console.error(error);
