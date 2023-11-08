@@ -9,7 +9,7 @@
       </div>
       <button @click="nextItem" class="arrow right-arrow">&gt;</button>
     </div>
-  </template>
+</template>
   
   <script>
   export default {
