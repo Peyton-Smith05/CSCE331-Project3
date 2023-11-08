@@ -30,6 +30,8 @@
           </li>
         </ul>
         <div class="total">
+          Items: ${{ itemCost }}<br>
+          Tax: ${{ taxCost }}<br>
           Total: ${{ totalCost }}
         </div>
       </div>
@@ -38,17 +40,10 @@
   
   <script>
   import axios from 'axios';
-
   export default {
     data() {
       return {
-        menuItems: [
-          { id: 1, name: "Pizza", price: 12.99, category: 1, quantity: 1 },
-          { id: 2, name: "Hamburger", price: 9.99, category: 2, quantity: 1 },
-          { id: 3, name: "Cheeseburger", price: 10.99, category: 2, quantity: 1 },
-          { id: 4, name: "Garden Salad", price: 7.99, category: 3, quantity: 1 },
-          { id: 5, name: "Caesar Salad", price: 8.99, category: 3, quantity: 1 },
-        ],
+        menuItems: [],
         orderedItems: [],
         categories: [
           { id: 1, name: "Pizza" },
@@ -73,7 +68,7 @@
         }
       },
       addItemToOrder(menuItem) {
-        if (menuItem.quantity > 0) {
+        //if (menuItem.quantity > 0) {
           const existingItem = this.orderedItems.find(
             (item) => item.id === menuItem.id
           );
@@ -83,9 +78,9 @@
           } else {
             this.orderedItems.push({ ...menuItem, quantity: 1 });
           }
-        } else {
-          alert("Item quantity must be greater than 0");
-        }
+        //} else {
+        //  alert("Item quantity must be greater than 0");
+        //}
       },
       removeItemFromOrder(orderItem) {
         if (orderItem.quantity > 1) {
@@ -106,16 +101,37 @@
           );
         }
       },
+      orderSubmission() {
+
+      }
     },
     computed: {
-      totalCost() {
+      itemCost() {
         return this.orderedItems.reduce((acc, item) => {
           return acc + item.price * item.quantity;
         }, 0);
       },
+      taxCost() {
+        return this.orderedItems.reduce((acc, item) => {
+          return (acc + item.price * item.quantity) * 0.07;
+        }, 0);
+      },
+      totalCost() {
+        return this.orderedItems.reduce((acc, item) => {
+          return (acc + item.price * item.quantity) * 1.07;
+        }, 0);
+      }
     },
     mounted() {
       this.filteredMenuItems = this.menuItems;
+      axios.get('http://localhost:3000/api/menu-items')
+        .then((response) => {
+          this.menuItems = response.data;
+          this.filteredMenuItems = this.menuItems;
+        })
+        .catch((error) => {
+          console.error('error fetching menu items:', error);
+        })
     },
   };
   </script>
