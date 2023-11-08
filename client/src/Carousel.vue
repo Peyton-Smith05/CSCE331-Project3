@@ -1,39 +1,38 @@
 <template>
-    <div class="carousel">
-      <button @click="prevItem" class="arrow left-arrow">&lt;</button>
-      <div v-for="(item, index) in items" :key="index" class="carousel-item" :class="{ active: index === currentIndex }">
-        <div class="item-details">
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.description }}</p>
-        </div>
+  <div class="carousel">
+    <button @click="prevItem" class="arrow left-arrow">&lt;</button>
+    <div v-for="(item, index) in carouselItems" :key="index" class="carousel-item" :class="{ active: index === currentIndex }">
+      <div class="item-details">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
       </div>
-      <button @click="nextItem" class="arrow right-arrow">&gt;</button>
     </div>
+    <button @click="nextItem" class="arrow right-arrow">&gt;</button>
+  </div>
 </template>
-  
-  <script>
-  export default {
-    props: {
-      items: Array, // Array of carousel items
+
+<script>
+export default {
+  data() {
+    return {
+      currentIndex: 0,
+      carouselItems: [
+        { title: "New Drink 1", description: "Try our latest drink!" },
+        { title: "Deal 1", description: "Special deal for you!" },
+        // Add more items as needed
+      ],
+    };
+  },
+  methods: {
+    nextItem() {
+      this.currentIndex = (this.currentIndex + 1) % this.carouselItems.length;
     },
-    data() {
-      return {
-        currentIndex: 0, // Track the current item index
-        maxIndex: this.items.length - 1, // Calculate the maximum index
-      };
+    prevItem() {
+      this.currentIndex = (this.currentIndex - 1 + this.carouselItems.length) % this.carouselItems.length;
     },
-    methods: {
-        nextItem() {
-        // Move to the next item in the carousel
-        this.currentIndex = (this.currentIndex + 1) % this.items.length;
-        },
-        prevItem() {
-        // Move to the previous item in the carousel
-        this.currentIndex = (this.currentIndex - 1 + this.items.length) % this.items.length;
-        },
-    },
-  };
-  </script>
+  },
+};
+</script>
   
   
   <style scoped>

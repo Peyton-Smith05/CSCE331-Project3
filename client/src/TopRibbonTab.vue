@@ -1,6 +1,8 @@
 <template>
     <div class="top-ribbon-tab">
-      <button @click="goToCashierInterface">Go to Cashier</button>
+      <router-link to="/cashier">
+        <button @click="goToCashierInterface">Go to Cashier</button>
+      </router-link>
     </div>
   </template>
   
@@ -9,6 +11,7 @@
     methods: {
       goToCashierInterface() {
         // Navigate to the cashier interface page using Vue Router
+        console.log("Clicked")
         this.$router.push('/cashier');
       },
     },
