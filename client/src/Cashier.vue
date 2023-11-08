@@ -115,13 +115,13 @@
         }, 0);
       },
       categories() {
-        return this.respond.map((category, index) => ({
+        return this.respond.filter(category => category.category !== "topping").map((category, index) => ({
           id: index + 1,
           name: category.category,
         }));
       },
       menuItems() {
-        return this.respondItems.map((item, index) => {
+        return this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
         const matchingCategory = this.categories.find(category => category.name === item.category);
         const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
         return {
