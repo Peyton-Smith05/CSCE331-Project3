@@ -26,7 +26,7 @@ export default {
   methods: {
     async fetchMenu() {
       try {
-        const response = await axios.get('http://localhost:3000/api/menu-items');
+        const response = await axios.get('http://localhost:3000/menu-items/whats-new');
         this.menu = response.data;
       } catch (error) {
         console.error(error);
