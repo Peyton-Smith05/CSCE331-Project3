@@ -22,10 +22,11 @@ const pool = new Pool({
     ssl: {rejectUnauthorized: false}
 });
 
+
 // API endpoint to get users
 app.get('/api/menu-items', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM menu');
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'what\'\'s new\'');
     res.json(rows);
   } catch (err) {
     console.error(err.message);
@@ -33,10 +34,109 @@ app.get('/api/menu-items', async (req, res) => {
   }
 });
 
-// API endpoint to get users
-app.get('/api/orders', async (req, res) => {
+// API endpoint to get topping menu items
+app.get('/menu-items/topping', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM order_log');
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'topping\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// API endpoint to get classic menu items
+app.get('/menu-items/classic', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'classic\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// API endpoint to get espresso menu items
+app.get('/menu-items/espresso', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'espresso\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// API endpoint to get milk tea menu items
+app.get('/menu-items/milk-tea', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'milk tea\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// API endpoint to get slush menu items
+app.get('/menu-items/slush', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'slush\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// API endpoint to get yogurt menu items
+app.get('/menu-items/yogurt', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'yogurt\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// API endpoint to get milk cap menu items
+app.get('/menu-items/milk-cap', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'milk cap\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// API endpoint to get punch menu items
+app.get('/menu-items/punch', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'punch\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// API endpoint to get milk strike menu items
+app.get('/menu-items/milk-strike', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'milk strike\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// API endpoint to get menu categories
+app.get('/menu-items/category', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT DISTINCT category FROM menu');
     res.json(rows);
   } catch (err) {
     console.error(err.message);
