@@ -37,33 +37,48 @@
   </template>
   
   <script>
+  import axios from 'axios';
+
   export default {
     data() {
       return {
-        menuItems: [
-          { id: 1, name: "Pizza", price: 12.99, category: 1, quantity: 1 },
-          { id: 2, name: "Hamburger", price: 9.99, category: 2, quantity: 1 },
-          { id: 3, name: "Cheeseburger", price: 10.99, category: 2, quantity: 1 },
-          { id: 4, name: "Garden Salad", price: 7.99, category: 3, quantity: 1 },
-          { id: 5, name: "Caesar Salad", price: 8.99, category: 3, quantity: 1 },
-        ],
         orderedItems: [],
-        categories: [
-          { id: 1, name: "Pizza" },
-          { id: 2, name: "Burgers" },
-          { id: 3, name: "Salads" },
-        ],
         filteredMenuItems: [],
         selectedCategory: 0,
+        respond: [],
+        respondItems: [],
       };
     },
+    created() {
+      this.fetchCategory('http://localhost:3000/menu-items/category')
+          // Call the second fetchData function or any other operations that depend on categories here
+      this.fetchMenuItems('http://localhost:3000/menu-items'); // Replace with the appropriate URL
+    },
     methods: {
+      async fetchCategory(whatToFetch) {
+        try {
+          const response = await axios.get(whatToFetch);
+          this.respond = response.data;
+        } catch (error) {
+          console.error(error);
+          this.error = 'Failed to load users.';
+        }
+      },
+      async fetchMenuItems(whatToFetch) {
+          try {
+            const response = await axios.get(whatToFetch);
+            this.respondItems = response.data;
+          } catch (error) {
+            console.error(error);
+            this.error = 'Failed to load users.';
+          }
+      },
       addItemToOrder(menuItem) {
         if (menuItem.quantity > 0) {
           const existingItem = this.orderedItems.find(
             (item) => item.id === menuItem.id
           );
-  
+
           if (existingItem) {
             existingItem.quantity++;
           } else {
@@ -99,11 +114,29 @@
           return acc + item.price * item.quantity;
         }, 0);
       },
-    },
+      categories() {
+        return this.respond.map((category, index) => ({
+          id: index + 1,
+          name: category.category,
+        }));
+      },
+      menuItems() {
+        return this.respondItems.map((item, index) => {
+        const matchingCategory = this.categories.find(category => category.name === item.category);
+        const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
+        return {
+          id: index + 1,
+          name: item.name,
+          price: item.price,
+          category: categoryId,
+          quantity: 1,
+        };
+      });
+      },
     mounted() {
       this.filteredMenuItems = this.menuItems;
     },
-  };
+  }};
   </script>
   
   <style scoped>

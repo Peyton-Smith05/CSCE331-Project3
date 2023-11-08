@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const axios = require('axios');
 require('dotenv').config();
 
 const path = __dirname + "/../client/dist/";
@@ -22,9 +21,7 @@ const pool = new Pool({
     ssl: {rejectUnauthorized: false}
 });
 
-
-// API endpoint to get users
-app.get('/api/menu-items', async (req, res) => {
+app.get('/api/menu-items/whats-new', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'what\'\'s new\'');
     res.json(rows);
@@ -144,10 +141,21 @@ app.get('/menu-items/category', async (req, res) => {
   }
 });
 
+// API endpoint to get users
+app.get('/menu-items', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
 // Define the port
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 // Start the server
-app.listen(process.env.PORT || 8081, () => {
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
