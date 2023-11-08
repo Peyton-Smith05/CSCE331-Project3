@@ -1,16 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import CashierInterface from './Cashier.vue';
+import Cashier from './Cashier.vue';
+
+import Carousel from './Carousel.vue';
 
 const routes = [
   {
     path: '/',
-    redirect: '/cashier', // Redirect the root path to the cashier interface
+    name: 'Home',
+    component: Carousel, // Redirect the root path to the cashier interface
   },
   {
     path: '/cashier',
     name: 'cashier',
-    component: CashierInterface,
+    component: Cashier,
   },
   // Add more routes for other pages if needed
 ];
