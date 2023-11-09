@@ -21,10 +21,7 @@ const pool = new Pool({
     ssl: {rejectUnauthorized: false}
 });
 
-<<<<<<< HEAD
-=======
 
->>>>>>> cb874d662d792e0c1e7ae0313a90294785d59ef6
 // API endpoint to get users
 app.get('/api/menu-items', async (req, res) => {
   try {
