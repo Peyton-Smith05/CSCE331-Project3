@@ -25,7 +25,7 @@ const pool = new Pool({
 // API endpoint to get users
 app.get('/api/menu-items', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'what\'\'s new\'');
+    const { rows } = await pool.query('SELECT * FROM menu WHERE');
     res.json(rows);
   } catch (err) {
     console.error(err.message);
