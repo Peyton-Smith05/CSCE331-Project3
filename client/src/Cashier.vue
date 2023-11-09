@@ -124,7 +124,7 @@
     },
     mounted() {
       this.filteredMenuItems = this.menuItems;
-      axios.get('http://localhost:3000/api/menu-items')
+      axios.get('/api/menu-items')
         .then((response) => {
           this.menuItems = response.data;
           this.filteredMenuItems = this.menuItems;
