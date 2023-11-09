@@ -107,7 +107,7 @@
           );
         }
       },
-    },
+    }, 
     computed: {
       totalCost() {
         return this.orderedItems.reduce((acc, item) => {
