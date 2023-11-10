@@ -21,9 +21,9 @@ const pool = new Pool({
     ssl: {rejectUnauthorized: false}
 });
 
-app.get('/api/menu-items/whats-new', async (req, res) => {
+app.get('/api/menu-items', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM menu WHERE');
+    const { rows } = await pool.query('SELECT * FROM menu');
     res.json(rows);
   } catch (err) {
     console.error(err.message);
