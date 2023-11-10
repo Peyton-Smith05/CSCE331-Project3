@@ -52,9 +52,9 @@
       };
     },
     created() {
-      this.fetchCategory('http://localhost:3000/menu-items/category')
+      this.fetchCategory('/menu-items/category')
           // Call the second fetchData function or any other operations that depend on categories here
-      this.fetchMenuItems('http://localhost:3000/menu-items'); // Replace with the appropriate URL
+      this.fetchMenuItems('/menu-items'); // Replace with the appropriate URL
     },
     methods: {
       async fetchCategory(whatToFetch) {
