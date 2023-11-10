@@ -40,32 +40,40 @@
   
   <script>
   import axios from 'axios';
+
   export default {
     data() {
       return {
-        menuItems: [],
         orderedItems: [],
-        categories: [
-          { id: 1, name: "Pizza" },
-          { id: 2, name: "Burgers" },
-          { id: 3, name: "Salads" },
-        ],
         filteredMenuItems: [],
         selectedCategory: 0,
+        respond: [],
+        respondItems: [],
       };
     },
     created() {
-      this.fetchCategory();
+      this.fetchCategory('http://localhost:3000/menu-items/category')
+          // Call the second fetchData function or any other operations that depend on categories here
+      this.fetchMenuItems('http://localhost:3000/menu-items'); // Replace with the appropriate URL
     },
     methods: {
-      async fetchCategory() {
+      async fetchCategory(whatToFetch) {
         try {
-          const response = await axios.get('/menu-items/category');
-          this.menu = response.data;
+          const response = await axios.get(whatToFetch);
+          this.respond = response.data;
         } catch (error) {
           console.error(error);
           this.error = 'Failed to load users.';
         }
+      },
+      async fetchMenuItems(whatToFetch) {
+          try {
+            const response = await axios.get(whatToFetch);
+            this.respondItems = response.data;
+          } catch (error) {
+            console.error(error);
+            this.error = 'Failed to load users.';
+          }
       },
       addItemToOrder(menuItem) {
         //if (menuItem.quantity > 0) {
@@ -101,6 +109,7 @@
           );
         }
       },
+    }, 
       orderSubmission() {
 
       }
@@ -110,6 +119,25 @@
         return this.orderedItems.reduce((acc, item) => {
           return acc + item.price * item.quantity;
         }, 0);
+      },
+      categories() {
+        return this.respond.filter(category => category.category !== "topping").map((category, index) => ({
+          id: index + 1,
+          name: category.category,
+        }));
+      },
+      menuItems() {
+        return this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
+        const matchingCategory = this.categories.find(category => category.name === item.category);
+        const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
+        return {
+          id: index + 1,
+          name: item.name,
+          price: item.price,
+          category: categoryId,
+          quantity: 1,
+        };
+      });
       },
       taxCost() {
         return this.orderedItems.reduce((acc, item) => {
@@ -133,7 +161,7 @@
           console.error('error fetching menu items:', error);
         })
     },
-  };
+  }};
   </script>
   
   <style scoped>
