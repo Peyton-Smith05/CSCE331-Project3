@@ -30,6 +30,8 @@
           </li>
         </ul>
         <div class="total">
+          Items: ${{ itemCost }}<br>
+          Tax: ${{ taxCost }}<br>
           Total: ${{ totalCost }}
         </div>
       </div>
@@ -74,7 +76,7 @@
           }
       },
       addItemToOrder(menuItem) {
-        if (menuItem.quantity > 0) {
+        //if (menuItem.quantity > 0) {
           const existingItem = this.orderedItems.find(
             (item) => item.id === menuItem.id
           );
@@ -84,9 +86,9 @@
           } else {
             this.orderedItems.push({ ...menuItem, quantity: 1 });
           }
-        } else {
-          alert("Item quantity must be greater than 0");
-        }
+        //} else {
+        //  alert("Item quantity must be greater than 0");
+        //}
       },
       removeItemFromOrder(orderItem) {
         if (orderItem.quantity > 1) {
@@ -108,8 +110,12 @@
         }
       },
     }, 
+      orderSubmission() {
+
+      }
+    },
     computed: {
-      totalCost() {
+      itemCost() {
         return this.orderedItems.reduce((acc, item) => {
           return acc + item.price * item.quantity;
         }, 0);
@@ -133,8 +139,27 @@
         };
       });
       },
+      taxCost() {
+        return this.orderedItems.reduce((acc, item) => {
+          return (acc + item.price * item.quantity) * 0.07;
+        }, 0);
+      },
+      totalCost() {
+        return this.orderedItems.reduce((acc, item) => {
+          return (acc + item.price * item.quantity) * 1.07;
+        }, 0);
+      }
+    },
     mounted() {
       this.filteredMenuItems = this.menuItems;
+      axios.get('/api/menu-items')
+        .then((response) => {
+          this.menuItems = response.data;
+          this.filteredMenuItems = this.menuItems;
+        })
+        .catch((error) => {
+          console.error('error fetching menu items:', error);
+        })
     },
   }};
   </script>
