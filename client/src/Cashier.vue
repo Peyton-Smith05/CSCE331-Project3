@@ -11,7 +11,7 @@
       <div class="menu-items">
         <h3>Menu Items</h3>
         <ul>
-          <li v-for="menuItem in filteredMenuItems" :key="menuItem.id">
+          <li v-for="menuItem in removeDuplicates(filteredMenuItems)" :key="menuItem.id">
             <div>
               {{ menuItem.name }} - ${{ menuItem.price }}
               <button @click="addItemToOrder(menuItem)">Add to Order</button>
@@ -52,9 +52,9 @@
       };
     },
     created() {
-      this.fetchCategory('/menu-items/category')
+      this.fetchCategory('http://localhost:3000/menu-items/category')
           // Call the second fetchData function or any other operations that depend on categories here
-      this.fetchMenuItems('/menu-items'); // Replace with the appropriate URL
+      this.fetchMenuItems('http://localhost:3000/menu-items'); // Replace with the appropriate URL
     },
     methods: {
       async fetchCategory(whatToFetch) {
@@ -106,12 +106,31 @@
         } else {
           this.filteredMenuItems = this.menuItems.filter(
             (item) => item.category === categoryId
-          );
+          )
         }
+      },
+      removeDuplicates(menuItems) {
+        let noDupMenu = [];
+        let UniqueItems = {};
+        for(let index in menuItems) {
+          let itemName = menuItems[index]['name'];
+          UniqueItems[itemName] = menuItems[index];
+        }
+        
+        for( let noDupItem in UniqueItems) {
+          noDupMenu.push(UniqueItems[noDupItem]);
+        }
+        return noDupMenu
       },
       orderSubmission() {
 
-      }
+      },
+      cleanItemName(item_name) {
+        if(item_name[item_name.length - 1] == 'M' || item_name[item_name.length - 1] == 'L') {
+          item_name = item_name.substring(0, item_name.length - 2)
+        }
+        return item_name;
+      },
     },
     computed: {
       itemCost() {
@@ -131,7 +150,7 @@
         const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
         return {
           id: index + 1,
-          name: item.name,
+          name: this.cleanItemName(item.name),
           price: item.price,
           category: categoryId,
           quantity: 1,
@@ -150,8 +169,8 @@
       }
     },
     mounted() {
-      this.filteredMenuItems = this.menuItems;
-      axios.get('/api/menu-items')
+      this.filteredMenuItems = this.menuItems
+      axios.get('http://localhost:3000/api/menu-items')
         .then((response) => {
           this.menuItems = response.data;
           this.filteredMenuItems = this.menuItems;
