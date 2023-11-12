@@ -22,6 +22,7 @@
   .top-ribbon-tab {
     background-color: #ccc;
     padding: 10px;
+    z-index: 6;
     width: 100vw;
     height: 10vh;
     margin: 0; /* Remove any default margin */

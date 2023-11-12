@@ -192,10 +192,15 @@
     left: 10vw;
   }
   
-  .menu-items,
+  .menu-items {
+    overflow: auto;
+    width: 45vw;
+  }
   .ordered-items {
     flex: 1;
     padding: 20px;
+    height: 100%;
+    width: 45vw;
     border: 1px solid #ccc;
   }
   
