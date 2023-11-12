@@ -106,8 +106,21 @@
         } else {
           this.filteredMenuItems = this.menuItems.filter(
             (item) => item.category === categoryId
-          );
+          )
         }
+      },
+      removeDuplicates(menuItems) {
+        let noDupMenu = [];
+        let UniqueItems = {};
+        for(let index in menuItems) {
+          let itemName = menuItems[index]['name'];
+          UniqueItems[itemName] = menuItems[index];
+        }
+        
+        for( let noDupItem in UniqueItems) {
+          noDupMenu.push(UniqueItems[noDupItem]);
+        }
+        return noDupMenu
       },
       orderSubmission() {
 
@@ -118,11 +131,6 @@
         }
         return item_name;
       },
-      removeDuplicates(menuItemList) {
-        console.log(typeof(menuItemList[0]));
-        return menuItemList.filter((value, index) => 
-        menuItemList[menuItemList.indexOf(value)].name === menuItemList[index].name);
-      }
     },
     computed: {
       itemCost() {
@@ -161,7 +169,7 @@
       }
     },
     mounted() {
-      this.filteredMenuItems = this.menuItems;
+      this.filteredMenuItems = this.menuItems
       axios.get('http://localhost:3000/api/menu-items')
         .then((response) => {
           this.menuItems = response.data;
