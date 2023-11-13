@@ -25,14 +25,22 @@
           <li v-for="orderItem in orderedItems" :key="orderItem.id">
             <div>
               {{ orderItem.name }} - ${{ orderItem.price }} - Quantity: {{ orderItem.quantity }}
+              <!-- TODO: Create function that launches popup to customize item. -->
+              <button @click="customizeItem(orderItem)">Customize</button>
               <button @click="removeItemFromOrder(orderItem)">Remove</button>
             </div>
           </li>
         </ul>
-        <div class="total">
-          Items: ${{ itemCost }}<br>
-          Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
-          Total: ${{ parseFloat(totalCost).toFixed(2) }}
+        <!-- TODO: Create new page to continue and finish order. (Maybe popup?)-->
+        <div class="order-footer">
+          <div class="buy-section" v-if="orderedItems.length != 0">
+            <button @click="payOrder()">Go to Checkout</button>  
+          </div>
+          <div class="total">
+            Items: ${{ itemCost }}<br>
+            Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
+            Total: ${{ parseFloat(totalCost).toFixed(2) }}
+          </div>
         </div>
       </div>
     </div>
@@ -207,6 +215,22 @@
   .total {
     text-align: right;
     font-weight: bold;
+  }
+
+  .order-footer {
+    width: 100%;
+    display: flex;
+    bottom: 10vh;
+  }
+
+  .total {
+    width: 25vw;
+    padding: 20px;
+  }
+  
+  .buy-section {
+    width: 25vw;
+    padding: 20px;
   }
   
   .ribbon-tab {
