@@ -45,6 +45,8 @@
   <script>
   import axios from 'axios';
 
+  const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+
   export default {
     data() {
       return {
@@ -56,10 +58,12 @@
       };
     },
     created() {
-      this.fetchCategory('http://localhost:3000/menu-items/category');
+      const category_api = apiRedirect + "/menu-items/category";
+      this.fetchCategory(category_api);
           // Call the second fetchData function or any other operations that depend on categories here
-      this.fetchMenuItems('http://localhost:3000/menu-items'); // Replace with the appropriate URL
-      this.filterByCategory(0);
+      
+      const menuItems_api = apiRedirect + "/menu-items";
+      this.fetchMenuItems(menuItems_api); // Replace with the appropriate URL
     },
     methods: {
       async fetchCategory(whatToFetch) {
@@ -177,8 +181,8 @@
       }
     },
     mounted() {
-      this.filteredMenuItems = this.menuItems
-      axios.get('http://localhost:3000/api/menu-items')
+      this.filteredMenuItems = this.menuItems;
+      axios.get(apiRedirect+ '/menu-items')
         .then((response) => {
           this.menuItems = response.data;
           this.filteredMenuItems = this.menuItems;
