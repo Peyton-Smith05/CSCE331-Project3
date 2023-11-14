@@ -93,10 +93,13 @@
         //}
       },
       removeItemFromOrder(orderItem) {
-        if (orderItem.quantity > 1) {
-          orderItem.quantity--;
-        } else {
-          this.orderedItems.pop({ ...orderItem, quantity: 1 });
+        const indexToRemove = this.orderedItems.findIndex(item => item.id === orderItem.id);
+        if (indexToRemove !== -1) {
+          if (orderItem.quantity > 1) {
+            this.orderedItems[indexToRemove].quantity--;
+          } else {
+            this.orderedItems.splice(indexToRemove, 1);
+          }
         }
       },
       filterByCategory(categoryId) {
