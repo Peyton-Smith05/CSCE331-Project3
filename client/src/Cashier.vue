@@ -1,13 +1,14 @@
 <template>
-    <div class="cashier-interface">
-      <div class="ribbon-tab">
-        <ul>
-          <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
-          <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id}">
-            <a @click="filterByCategory(category.id)">{{ category.name }}</a>
-          </li>
-        </ul>
-      </div>
+  <div class="cashier-interface">
+    <div class="ribbon-tab">
+      <ul>
+        <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
+        <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id}">
+          <a @click="filterByCategory(category.id)">{{ category.name }}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="menu-items-wrapper">
       <div class="menu-items">
         <h3>Menu Items</h3>
         <ul>
@@ -19,6 +20,8 @@
           </li>
         </ul>
       </div>
+    </div>
+    <div class="ordered-items-wrapper">
       <div class="ordered-items">
         <h3>Ordered Items</h3>
         <ul>
@@ -36,7 +39,8 @@
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
   import axios from 'axios';
@@ -103,7 +107,7 @@
         }
       },
       filterByCategory(categoryId) {
-        this.selectedCategory = categoryId;
+        this.selectedCategory = categoryId
         if (categoryId === 0) {
           this.filteredMenuItems = this.menuItems;
         } else {
@@ -197,14 +201,26 @@
   
   .menu-items,
   .ordered-items {
-    flex: 1;
-    padding: 20px;
-    border: 1px solid #ccc;
+    /* No borders here */
+    padding: 20px 0; /* Adjust padding as needed */
   }
   
   .total {
     text-align: right;
     font-weight: bold;
+  }
+
+  .menu-items-wrapper,
+  .ordered-items-wrapper {
+    flex: 1;
+    padding: 0 20px; /* Adjust padding as needed */
+    border-left: 1px solid #ccc; /* Add left border */
+    border-right: 1px solid #ccc; /* Add right border */
+    overflow-y: auto; /* Enable vertical scrolling */
+  }
+
+  .menu-items-wrapper {
+    margin-right: 10px; /* Adjust margin to create space between columns */
   }
   
   .ribbon-tab {
