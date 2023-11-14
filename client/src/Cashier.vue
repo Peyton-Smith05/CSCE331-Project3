@@ -1,17 +1,18 @@
 <template>
-    <div class="cashier-interface">
-      <div class="ribbon-tab">
-        <ul>
-          <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
-          <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id}">
-            <a @click="filterByCategory(category.id)">{{ category.name }}</a>
-          </li>
-        </ul>
-      </div>
+  <div class="cashier-interface">
+    <div class="ribbon-tab">
+      <ul>
+        <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
+        <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id}">
+          <a @click="filterByCategory(category.id)">{{ category.name }}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="menu-items-wrapper">
       <div class="menu-items">
         <h3>Menu Items</h3>
         <ul>
-          <li v-for="menuItem in filteredMenuItems" :key="menuItem.id">
+          <li v-for="menuItem in removeDuplicates(filteredMenuItems)" :key="menuItem.id">
             <div>
               {{ menuItem.name }} - ${{ menuItem.price }}
               <button @click="addItemToOrder(menuItem)">Add to Order</button>
@@ -19,8 +20,15 @@
           </li>
         </ul>
       </div>
+    </div>
+    <div class="ordered-items-wrapper">
       <div class="ordered-items">
         <h3>Ordered Items</h3>
+        <div class="total">
+          Items: ${{ itemCost }}<br>
+          Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
+          Total: ${{ parseFloat(totalCost).toFixed(2) }}
+        </div>
         <ul>
           <li v-for="orderItem in orderedItems" :key="orderItem.id">
             <div>
@@ -29,14 +37,10 @@
             </div>
           </li>
         </ul>
-        <div class="total">
-          Items: ${{ itemCost }}<br>
-          Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
-          Total: ${{ parseFloat(totalCost).toFixed(2) }}
-        </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
   import axios from 'axios';
@@ -98,25 +102,47 @@
         //}
       },
       removeItemFromOrder(orderItem) {
-        if (orderItem.quantity > 1) {
-          orderItem.quantity--;
-        } else {
-          this.orderedItems.pop({ ...orderItem, quantity: 1 });
+        const indexToRemove = this.orderedItems.findIndex(item => item.id === orderItem.id);
+        if (indexToRemove !== -1) {
+          if (orderItem.quantity > 1) {
+            this.orderedItems[indexToRemove].quantity--;
+          } else {
+            this.orderedItems.splice(indexToRemove, 1);
+          }
         }
       },
       filterByCategory(categoryId) {
-        this.selectedCategory = categoryId;
+        this.selectedCategory = categoryId
         if (categoryId === 0) {
           this.filteredMenuItems = this.menuItems;
         } else {
           this.filteredMenuItems = this.menuItems.filter(
             (item) => item.category === categoryId
-          );
+          )
         }
+      },
+      removeDuplicates(menuItems) {
+        let noDupMenu = [];
+        let UniqueItems = {};
+        for(let index in menuItems) {
+          let itemName = menuItems[index]['name'];
+          UniqueItems[itemName] = menuItems[index];
+        }
+        
+        for( let noDupItem in UniqueItems) {
+          noDupMenu.push(UniqueItems[noDupItem]);
+        }
+        return noDupMenu
       },
       orderSubmission() {
 
-      }
+      },
+      cleanItemName(item_name) {
+        if(item_name[item_name.length - 1] == 'M' || item_name[item_name.length - 1] == 'L') {
+          item_name = item_name.substring(0, item_name.length - 2)
+        }
+        return item_name;
+      },
     },
     computed: {
       itemCost() {
@@ -136,7 +162,7 @@
         const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
         return {
           id: index + 1,
-          name: item.name,
+          name: this.cleanItemName(item.name),
           price: item.price,
           category: categoryId,
           quantity: 1,
@@ -180,14 +206,41 @@
   
   .menu-items,
   .ordered-items {
-    flex: 1;
-    padding: 20px;
-    border: 1px solid #ccc;
+    padding: 20px 0; 
+  }
+
+  .ordered-items {
+    position: relative;
   }
   
   .total {
+    position: absolute;
+    top: 10;
+    right: 0;
     text-align: right;
     font-weight: bold;
+  }
+
+  .menu-items-wrapper {
+    flex: 1;
+    padding: 0 20px; 
+    border-left: 1px solid #ccc; 
+    border-right: 1px solid #ccc; 
+    overflow-y: auto; 
+  }
+
+  .ordered-items-wrapper {
+    flex: 1;
+    padding: 0 20px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu-items-wrapper {
+    margin-right: 10px; 
   }
   
   .ribbon-tab {
