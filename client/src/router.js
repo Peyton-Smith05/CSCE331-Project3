@@ -4,6 +4,8 @@ import Cashier from './Cashier.vue';
 
 import Carousel from './Carousel.vue';
 
+import Login from './Login.vue';
+
 const routes = [
   {
     path: '/',
@@ -14,6 +16,11 @@ const routes = [
     path: '/cashier',
     name: 'cashier',
     component: Cashier,
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
   },
   // Add more routes for other pages if needed
 ];

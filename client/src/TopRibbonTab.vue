@@ -1,6 +1,6 @@
 <template>
-    <div class="top-ribbon-tab">
-      <router-link to="/cashier">
+    <div class="top-ribbon-tab" v-show="$route.path !== '/login'">
+      <router-link to="/login">
         <button @click="goToCashierInterface">Go to Cashier</button>
       </router-link>
     </div>
