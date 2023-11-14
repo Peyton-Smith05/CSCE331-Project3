@@ -24,6 +24,11 @@
     <div class="ordered-items-wrapper">
       <div class="ordered-items">
         <h3>Ordered Items</h3>
+        <div class="total">
+          Items: ${{ itemCost }}<br>
+          Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
+          Total: ${{ parseFloat(totalCost).toFixed(2) }}
+        </div>
         <ul>
           <li v-for="orderItem in orderedItems" :key="orderItem.id">
             <div>
@@ -32,11 +37,6 @@
             </div>
           </li>
         </ul>
-        <div class="total">
-          Items: ${{ itemCost }}<br>
-          Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
-          Total: ${{ parseFloat(totalCost).toFixed(2) }}
-        </div>
       </div>
     </div>
   </div>
@@ -56,9 +56,10 @@
       };
     },
     created() {
-      this.fetchCategory('http://localhost:3000/menu-items/category')
+      this.fetchCategory('http://localhost:3000/menu-items/category');
           // Call the second fetchData function or any other operations that depend on categories here
       this.fetchMenuItems('http://localhost:3000/menu-items'); // Replace with the appropriate URL
+      this.filterByCategory(0);
     },
     methods: {
       async fetchCategory(whatToFetch) {
@@ -201,26 +202,41 @@
   
   .menu-items,
   .ordered-items {
-    /* No borders here */
-    padding: 20px 0; /* Adjust padding as needed */
+    padding: 20px 0; 
+  }
+
+  .ordered-items {
+    position: relative;
   }
   
   .total {
+    position: absolute;
+    top: 10;
+    right: 0;
     text-align: right;
     font-weight: bold;
   }
 
-  .menu-items-wrapper,
+  .menu-items-wrapper {
+    flex: 1;
+    padding: 0 20px; 
+    border-left: 1px solid #ccc; 
+    border-right: 1px solid #ccc; 
+    overflow-y: auto; 
+  }
+
   .ordered-items-wrapper {
     flex: 1;
-    padding: 0 20px; /* Adjust padding as needed */
-    border-left: 1px solid #ccc; /* Add left border */
-    border-right: 1px solid #ccc; /* Add right border */
-    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 0 20px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
 
   .menu-items-wrapper {
-    margin-right: 10px; /* Adjust margin to create space between columns */
+    margin-right: 10px; 
   }
   
   .ribbon-tab {
