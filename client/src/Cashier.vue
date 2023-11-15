@@ -30,11 +30,40 @@
           Total: ${{ parseFloat(totalCost).toFixed(2) }}
         </div>
         <ul>
-          <li v-for="orderItem in orderedItems" :key="orderItem.id">
+          <li v-for="orderItem in orderedItems" :key="orderItem.temp">
             <div>
+              name: {{ orderItem.name }} <br>
+              quantity: {{ orderItem.quantity }} <br>
+              price: ${{ orderItem.price }} <br>
+              size: {{ orderItem.custom.size }} <br>
+              temp: {{ orderItem.custom.temp }} <br>
+              ice_level: {{ orderItem.custom.ice_level }} <br>
+              sugar_level: {{ orderItem.custom.sugar_level }} <br>
+              toppings: {{ orderItem.custom.toppings }} <br>
+              <button @click="removeItemFromOrder(orderItem)">Remove</button>
+              <button
+                type="button"
+                class="btn"
+                @click="showModal"
+              >
+                Modify
+              </button>
+              <Modal
+                v-show="isModalVisible"
+                @close="closeModal"
+                @updateCustom="updateCustomVal"
+                v-bind:id=orderItem.id
+                size="hehe"
+                temp="hehe"
+                ice_level=""
+                sugar_level=""
+                toppings=""
+              />
+            </div>
+            <!-- <div>
               {{ orderItem.name }} - ${{ orderItem.price }} - Quantity: {{ orderItem.quantity }}
               <button @click="removeItemFromOrder(orderItem)">Remove</button>
-            </div>
+            </div> -->
           </li>
         </ul>
       </div>
@@ -44,10 +73,13 @@
   
   <script>
   import axios from 'axios';
-
+  import Modal from './components/Modification.vue'
   const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 
   export default {
+    components: {
+      Modal,
+    },
     data() {
       return {
         orderedItems: [],
@@ -55,6 +87,7 @@
         selectedCategory: 0,
         respond: [],
         respondItems: [],
+        isModalVisible: false,
       };
     },
     created() {
@@ -134,15 +167,28 @@
         }
         return noDupMenu
       },
-      orderSubmission() {
-
-      },
       cleanItemName(item_name) {
         if(item_name[item_name.length - 1] == 'M' || item_name[item_name.length - 1] == 'L') {
           item_name = item_name.substring(0, item_name.length - 2)
         }
         return item_name;
       },
+      showModal() {
+        this.isModalVisible = true;
+      },
+      closeModal() {
+        this.isModalVisible = false;
+      },
+      updateCustomVal(id, size, temp, ice_level, sugar_level, toppings) {
+        console.log("HHEHHEHEHHEHEHEHHEHEHEH")
+        const indexToUpdate = this.orderedItems.findIndex(item => item.id === id)
+        this.orderedItems[indexToUpdate].size = size
+        this.orderedItems[indexToUpdate].temp = temp
+        this.orderedItems[indexToUpdate].ice_level = ice_level
+        this.orderedItems[indexToUpdate].sugar_level = sugar_level
+        this.orderedItems[indexToUpdate].toppings = toppings
+        console.log(this.orderedItems)
+      }
     },
     computed: {
       itemCost() {
@@ -166,6 +212,18 @@
           price: item.price,
           category: categoryId,
           quantity: 1,
+          custom: {
+            size: 'medium',
+            temp: 'cold',
+            ice_level: 'regular',
+            sugar_level: 100,
+            toppings: [
+              {topping_name: 'Bubble',
+               topping_quantity: 1,
+               topping_price: 0.5
+              }
+            ]
+          },
         };
       });
       },
@@ -192,6 +250,9 @@
         })
     },
   };
+
+
+  
   </script>
   
   <style scoped>
