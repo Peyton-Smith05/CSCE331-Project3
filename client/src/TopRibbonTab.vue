@@ -1,7 +1,7 @@
 <template>
     <div class="top-ribbon-tab" v-show="$route.path !== '/login'">
       <router-link to="/login">
-        <button @click="goToCashierInterface">Go to Cashier</button>
+        <button @click="goToLoginInterface()">Go to Cashier</button>
       </router-link>
     </div>
   </template>
@@ -9,6 +9,9 @@
   <script>
   export default {
     methods: {
+      goToLoginInterface() {
+        this.$router.push('/login');
+      },
       goToCashierInterface() {
         // Navigate to the cashier interface page using Vue Router
         console.log("Clicked")
