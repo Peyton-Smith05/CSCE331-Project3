@@ -26,7 +26,7 @@ export default {
   methods: {
     nextItem() {
       this.currentIndex = (this.currentIndex + 1) % this.carouselItems.length;
-    },
+    }, 
     prevItem() {
       this.currentIndex = (this.currentIndex - 1 + this.carouselItems.length) % this.carouselItems.length;
     },

@@ -1,24 +1,17 @@
 <template>
-    <div class="cashier-interface">
-      <div class="ribbon-tab">
-        <ul>
-          <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
-          <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id}">
-            <a @click="filterByCategory(category.id)">{{ category.name }}</a>
-          </li>
-        </ul>
-      </div>
-      <div class="menu-items">
-        <h3>Menu Items</h3>
-        <ul>
-          <li v-for="menuItem in filteredMenuItems" :key="menuItem.id">
-            <div>
-              {{ menuItem.name }} - ${{ menuItem.price }}
-              <button @click="addItemToOrder(menuItem)">Add to Order</button>
-            </div>
-          </li>
-        </ul>
-      </div>
+  <div class="cashier-interface">
+    <div class="ribbon-tab">
+      <ul>
+        <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
+        <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id}">
+          <a @click="filterByCategory(category.id)">{{ category.name }}</a>
+        </li>
+      </ul>
+    </div>
+    <router-view :filteredMenuItems="filteredMenuItems">
+
+    </router-view>
+    <div class="ordered-items-wrapper">
       <div class="ordered-items">
         <h3>Ordered Items</h3>
         <ul>
@@ -39,6 +32,7 @@
   <script>
   import axios from 'axios';
 
+  const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
   export default {
     data() {
       return {
@@ -52,7 +46,10 @@
     created() {
       this.fetchCategory('http://localhost:3000/menu-items/category')
           // Call the second fetchData function or any other operations that depend on categories here
-      this.fetchMenuItems('http://localhost:3000/menu-items'); // Replace with the appropriate URL
+      
+      const menuItems_api = apiRedirect + "/menu-items";
+      this.fetchMenuItems(menuItems_api); // Replace with the appropriate URL
+      this.filterByCategory(0);
     },
     methods: {
       async fetchCategory(whatToFetch) {
@@ -97,17 +94,43 @@
           );
         }
       },
+      removeDuplicates(menuItems) {
+        let noDupMenu = [];
+        let UniqueItems = {};
+        for(let index in menuItems) {
+          let itemName = menuItems[index]['name'];
+          UniqueItems[itemName] = menuItems[index];
+        }
+        
+        for( let noDupItem in UniqueItems) {
+          noDupMenu.push(UniqueItems[noDupItem]);
+        }
+        return noDupMenu
+      },
       filterByCategory(categoryId) {
-        this.selectedCategory = categoryId;
+        this.selectedCategory = categoryId
         if (categoryId === 0) {
           this.filteredMenuItems = this.menuItems;
         } else {
           this.filteredMenuItems = this.menuItems.filter(
             (item) => item.category === categoryId
-          );
+          )
         }
+        this.filteredMenuItems = this.removeDuplicates(this.filteredMenuItems);
       },
-    }, 
+      editMenuItems(payload) {
+        this.filteredMenuItems = payload.filteredMenuItems;
+      },
+      orderSubmission() {
+
+      },
+      cleanItemName(item_name) {
+        if(item_name[item_name.length - 1] == 'M' || item_name[item_name.length - 1] == 'L') {
+          item_name = item_name.substring(0, item_name.length - 2)
+        }
+        return item_name;
+      },
+    },
     computed: {
       totalCost() {
         return this.orderedItems.reduce((acc, item) => {
@@ -148,12 +171,9 @@
     top: 10vh;
     left: 10vw;
   }
-  
-  .menu-items,
   .ordered-items {
-    flex: 1;
-    padding: 20px;
-    border: 1px solid #ccc;
+    padding: 20px 0; 
+    position: relative;
   }
   
   .total {

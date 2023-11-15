@@ -2,6 +2,10 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import Cashier from './Cashier.vue';
 
+import Toppings from './Toppings.vue';
+
+import MenuItems from './Menu-Items.vue';
+
 import Carousel from './Carousel.vue';
 
 const routes = [
@@ -12,8 +16,21 @@ const routes = [
   },
   {
     path: '/cashier',
-    name: 'cashier',
+    name: 'Cashier',
     component: Cashier,
+    children: [
+      {
+        path: '', // Nested route for MenuItems
+        component: MenuItems,
+        props: (route) => ({ propName: route.query.filteredMenuItems })
+      },
+      {
+        path: '/toppings', // Nested route for Toppings (if needed)
+        name: 'Toppings',
+        component: Toppings,
+        props: true,
+      },
+    ],
   },
   // Add more routes for other pages if needed
 ];
