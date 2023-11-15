@@ -4,9 +4,7 @@
         <div class="login-logo">
             <img id="kft-banner" src="./assets/KFTBanner.jpg" alt="">
         </div>
-        <p id="title">
-            Kung Fu Tea
-        </p>
+        <img id="title" src="./assets/Kung_Fu_Tea_Official_Logo.png" alt="">
         <div class="login-entry">
             <form class="login-container">
                 <label id="email-label" for="email">Login:</label>
@@ -15,14 +13,27 @@
                 <label id="pswd-label" for="pswd">Password:</label>
                 <input id="pswd-entry" type="text" onfocus="this.value=''" value="E.g. 1234">
                 <br>
-                <input @click="goToCashier()" id="submit-btn" type="submit">
+                <div class="login-sections">
+                    <input @click="goToCashier()" id="submit-btn" type="submit">
+                    <br>
+                    <GoogleLogin class="google-oauth" :callback="callback" prompt auto-login/>
+                </div>
             </form>
         </div>
     </div>    
 </body>
 </template>
 <script>
+
 export default {
+    data() {
+        return {
+            callback:(response) => {
+                console.log("logged in");
+                console.log(response);
+            }
+        }
+    },
     methods: {
         goToCashier() {
         // Navigate to the cashier interface page using Vue Router
@@ -46,11 +57,10 @@ export default {
 
 #title {
     position: absolute;
-    color:white;
-    top: 35.5vh;
-    left: 20vh;
-    font-size: 120px;
-    font-weight: 500;
+    left: 5vw;
+    top: 5vh;
+    margin: 20px;
+    max-width: 20vw;
 }
 
 .login-container{
@@ -87,9 +97,20 @@ export default {
     padding:5px;
 }
 
-#submit-btn {
-    position: relative;
-    margin: 5px;
-    left:-5vw;
+.login-sections {
+    position:relative;
+    vertical-align: middle;
+    text-align: center;
+    left: 7vw;
 }
+
+#submit-btn {
+    font-size: 15px;
+    margin: 10px;
+}
+
+#google-oauth {
+    margin: 10px;
+}
+
 </style>
