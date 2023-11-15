@@ -1,13 +1,14 @@
 <template>
-    <div class="cashier-interface">
-      <div class="ribbon-tab">
-        <ul>
-          <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
-          <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id}">
-            <a @click="filterByCategory(category.id)">{{ category.name }}</a>
-          </li>
-        </ul>
-      </div>
+  <div class="cashier-interface">
+    <div class="ribbon-tab">
+      <ul>
+        <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
+        <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id}">
+          <a @click="filterByCategory(category.id)">{{ category.name }}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="menu-items-wrapper">
       <div class="menu-items">
         <h3>Menu Items</h3>
         <ul>
@@ -19,8 +20,15 @@
           </li>
         </ul>
       </div>
+    </div>
+    <div class="ordered-items-wrapper">
       <div class="ordered-items">
         <h3>Ordered Items</h3>
+        <div class="total">
+          Items: ${{ itemCost }}<br>
+          Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
+          Total: ${{ parseFloat(totalCost).toFixed(2) }}
+        </div>
         <ul>
           <li v-for="orderItem in orderedItems" :key="orderItem.id">
             <div>
@@ -31,23 +39,15 @@
             </div>
           </li>
         </ul>
-        <!-- TODO: Create new page to continue and finish order. (Maybe popup?)-->
-        <div class="order-footer">
-          <div class="buy-section" v-if="orderedItems.length != 0">
-            <button @click="payOrder()">Go to Checkout</button>  
-          </div>
-          <div class="total">
-            Items: ${{ itemCost }}<br>
-            Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
-            Total: ${{ parseFloat(totalCost).toFixed(2) }}
-          </div>
-        </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
   import axios from 'axios';
+
+  const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 
   export default {
     data() {
@@ -60,9 +60,12 @@
       };
     },
     created() {
-      this.fetchCategory('http://localhost:3000/menu-items/category')
+      const category_api = apiRedirect + "/menu-items/category";
+      this.fetchCategory(category_api);
           // Call the second fetchData function or any other operations that depend on categories here
-      this.fetchMenuItems('http://localhost:3000/menu-items'); // Replace with the appropriate URL
+      
+      const menuItems_api = apiRedirect + "/menu-items";
+      this.fetchMenuItems(menuItems_api); // Replace with the appropriate URL
     },
     methods: {
       async fetchCategory(whatToFetch) {
@@ -101,14 +104,17 @@
         //}
       },
       removeItemFromOrder(orderItem) {
-        if (orderItem.quantity > 1) {
-          orderItem.quantity--;
-        } else {
-          this.orderedItems.pop({ ...orderItem, quantity: 1 });
+        const indexToRemove = this.orderedItems.findIndex(item => item.id === orderItem.id);
+        if (indexToRemove !== -1) {
+          if (orderItem.quantity > 1) {
+            this.orderedItems[indexToRemove].quantity--;
+          } else {
+            this.orderedItems.splice(indexToRemove, 1);
+          }
         }
       },
       filterByCategory(categoryId) {
-        this.selectedCategory = categoryId;
+        this.selectedCategory = categoryId
         if (categoryId === 0) {
           this.filteredMenuItems = this.menuItems;
         } else {
@@ -177,8 +183,8 @@
       }
     },
     mounted() {
-      this.filteredMenuItems = this.menuItems
-      axios.get('http://localhost:3000/api/menu-items')
+      this.filteredMenuItems = this.menuItems;
+      axios.get(apiRedirect+ '/menu-items')
         .then((response) => {
           this.menuItems = response.data;
           this.filteredMenuItems = this.menuItems;
@@ -205,32 +211,41 @@
     width: 45vw;
   }
   .ordered-items {
-    flex: 1;
-    padding: 20px;
-    height: 100%;
-    width: 45vw;
-    border: 1px solid #ccc;
+    padding: 20px 0; 
+  }
+
+  .ordered-items {
+    position: relative;
   }
   
   .total {
+    position: absolute;
+    top: 10;
+    right: 0;
     text-align: right;
     font-weight: bold;
   }
 
-  .order-footer {
-    width: 100%;
-    display: flex;
-    bottom: 10vh;
+  .menu-items-wrapper {
+    flex: 1;
+    padding: 0 20px; 
+    border-left: 1px solid #ccc; 
+    border-right: 1px solid #ccc; 
+    overflow-y: auto; 
   }
 
-  .total {
-    width: 25vw;
-    padding: 20px;
+  .ordered-items-wrapper {
+    flex: 1;
+    padding: 0 20px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
-  
-  .buy-section {
-    width: 25vw;
-    padding: 20px;
+
+  .menu-items-wrapper {
+    margin-right: 10px; 
   }
   
   .ribbon-tab {
