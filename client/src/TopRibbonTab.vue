@@ -20,7 +20,7 @@
   
   <style scoped>
   .top-ribbon-tab {
-    background-color: #ccc;
+    background-color: rgba(204, 204, 204, 1);;
     padding: 10px;
     z-index: 6;
     width: 100vw;
@@ -29,6 +29,7 @@
     position: fixed; /* Add position: fixed to ensure it stays at the top */
     top: 0; /* Position it at the top of the viewport */
     left: 0;
+    z-index: 1;
   }
   
   .top-ribbon-tab button {
