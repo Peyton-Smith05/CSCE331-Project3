@@ -10,6 +10,11 @@ history({
   index: 'index.htmp'
 });
 
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  methods: 'POST'
+};
+
 // Middleware
 app.use(express.static(path));
 app.use(cors());
@@ -157,6 +162,21 @@ app.get('/menu-items', async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json('Server error');
+  }
+});
+
+app.post('/api/order', cors(corsOptions), async (req, res) => {
+  const { orderid, empid, date, time, total, tip } = req.body;
+  console.log(orderid);
+  
+  const insertQuery = 'INSERT INTO order_log(orderid, empid, date, time, total, tip) VALUES($1, $2, $3, $4, $5, $6)';
+
+  try {
+      await pool.query(insertQuery, [orderid, empid, date, time, total, tip]);
+      res.status(201).send('Order log created successfully');
+  } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
   }
 });
 

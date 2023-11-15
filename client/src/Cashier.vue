@@ -28,6 +28,9 @@
           Items: ${{ itemCost }}<br>
           Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
           Total: ${{ parseFloat(totalCost).toFixed(2) }}
+          <form @submit.prevent="submitOrderLog(orderData)">
+            <button type="submit">Checkout</button>
+          </form>
         </div>
         <ul>
           <li v-for="orderItem in orderedItems" :key="orderItem.temp">
@@ -64,8 +67,10 @@
               {{ orderItem.name }} - ${{ orderItem.price }} - Quantity: {{ orderItem.quantity }}
               <button @click="removeItemFromOrder(orderItem)">Remove</button>
             </div> -->
+            
           </li>
         </ul>
+        
       </div>
     </div>
   </div>
@@ -73,8 +78,10 @@
   
   <script>
   import axios from 'axios';
+  import { v4 as uuidv4 } from 'uuid';
   import Modal from './components/Modification.vue'
   const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+  console.log(apiRedirect)
 
   export default {
     components: {
@@ -88,6 +95,14 @@
         respond: [],
         respondItems: [],
         isModalVisible: false,
+        orderData: {
+          orderid: '', 
+          empid: '',
+          date: '',
+          time: '',
+          total: '',
+          tip: '',
+        },
       };
     },
     created() {
@@ -188,7 +203,25 @@
         this.orderedItems[indexToUpdate].sugar_level = sugar_level
         this.orderedItems[indexToUpdate].toppings = toppings
         console.log(this.orderedItems)
-      }
+      },
+      async submitOrderLog(orderDetails) {
+        const now = new Date();
+        const isoNow = now.toISOString();
+
+        orderDetails.orderid = 1000100;
+        orderDetails.empid = 4;
+        orderDetails.time = isoNow.split('T')[1].split('.')[0];
+        orderDetails.date = isoNow.split('T')[0];
+        orderDetails.total = this.totalCost;
+        orderDetails.tip = 0.0;
+        try {
+         
+          const response = await axios.post('http://localhost:3000/api/order', orderDetails);
+          console.log(response.data);
+        } catch (error) {
+          console.error('Error:', error); 
+        }
+      },
     },
     computed: {
       itemCost() {
