@@ -20,7 +20,8 @@ const routes = [
     component: Cashier,
     children: [
       {
-        path: '', // Nested route for MenuItems
+        path: '/menuitems', // Nested route for MenuItems
+        name: 'MenuItems',
         component: MenuItems,
         props: (route) => ({ propName: route.query.filteredMenuItems })
       },

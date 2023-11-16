@@ -29,7 +29,8 @@
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script>
   import axios from 'axios';
@@ -50,8 +51,10 @@
           // Call the second fetchData function or any other operations that depend on categories here
       
       const menuItems_api = apiRedirect + "/menu-items";
-      this.fetchMenuItems(menuItems_api); // Replace with the appropriate URL
-      this.filterByCategory(0);
+      this.fetchMenuItems(menuItems_api)
+        .then(() => {
+          this.filterByCategory(0); // After fetching menu items, apply filtering
+        });
     },
     methods: {
       async fetchCategory(whatToFetch) {
@@ -120,9 +123,6 @@
         }
         this.filteredMenuItems = this.removeDuplicates(this.filteredMenuItems);
       },
-      editMenuItems(payload) {
-        this.filteredMenuItems = payload.filteredMenuItems;
-      },
       orderSubmission() {
 
       },
@@ -132,10 +132,9 @@
         }
         return item_name;
       },
-    }, 
       orderSubmission() {
 
-      }
+      }, 
     },
     computed: {
       itemCost() {
@@ -184,7 +183,7 @@
           console.error('error fetching menu items:', error);
         })
     },
-  }};
+  };
   </script>
   
   <style scoped>
@@ -198,6 +197,7 @@
   }
   .ordered-items {
     padding: 20px 0; 
+    width: 50vw;
     position: relative;
   }
   
