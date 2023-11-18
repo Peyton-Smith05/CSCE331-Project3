@@ -20,6 +20,10 @@ const routes = [
     component: Cashier,
     children: [
       {
+        path: '', // Empty path for the child route
+        redirect: '/menuitems' // Redirects '/parent' to '/parent/defaultChildRoute'
+      },
+      {
         path: '/menuitems', // Nested route for MenuItems
         name: 'MenuItems',
         component: MenuItems,

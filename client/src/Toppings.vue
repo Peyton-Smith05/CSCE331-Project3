@@ -43,17 +43,21 @@
         <!-- Toppings Category -->
         <div class="topping-category">
           <h3>Toppings</h3>
-          <div v-for="option in toppingsOptions" :key="option">
-            <input type="checkbox" :id="option" :value="option" v-model="selectedToppings">
-            <label :for="option">{{ option }}</label>
+          <div v-for="option in toppingsOptions" :key="option.id">
+            <input type="checkbox" :id="option.id" :value="option" v-model="selectedToppings">
+            <label :for="option">{{ option.name }} - ${{ option.price }}</label>
           </div>
         </div>
   
       </div>
+      <button class="done-button" @click="submitOrder">Done</button>
     </div>
   </template>
   
   <script>
+  import axios from 'axios';
+
+  const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
   export default {
     data() {
       return {
@@ -67,18 +71,46 @@
         temperatureOptions: ['Hot', 'Cold'],
         sugarLevelOptions: ['30%', '50%', '70%', '100%', '120%'],
         iceLevelOptions: ['None', 'Less', 'Regular'],
-        toppingsOptions: [
-          'Mango Jelly', 'Brown Sugar Wow', 'Aloe Jelly', 'Milk Cap',
-          'Nata Jelly', 'Bubble', 'Berry Crystal Bubble', 'Herbal Jelly'
-        ],
+        respond: [],
       };
     },
+    created(){
+      const toppings_api = apiRedirect + "/menu-items/topping";
+      
+      this.fetchToppings(toppings_api);
+
+    },
     methods: {
+      async fetchToppings(whatToFetch) {
+        try {
+          const response = await axios.get(whatToFetch);
+          this.respond = response.data;
+        } catch (error) {
+          console.error(error);
+          this.error = 'Failed to load users.';
+        }
+      },
       closeToppingInterface() {
         // Handle closing of the topping interface
         this.$router.push({ name: 'MenuItems', params: {} });
       },
+      submitOrder() {
+        this.$emit('sendOrder', this.selectedSize, this.selectedTemperature, this.selectedSugarLevel, this.selectedIceLevel, this.selectedToppings);
+        this.$router.push({ name: 'MenuItems', params: {} });
+      },
       // Add methods to handle selection and processing of toppings
+    },
+    computed: {
+      toppingsOptions() {
+        return this.respond.map((item) => {
+        return {
+          id: item.menuid,
+          name: item.name,
+          price: item.price,
+          quantity: 1,
+        };
+      });
+      },
     },
   };
   </script>
@@ -102,6 +134,18 @@
   position: absolute;
   top: 10px;
   right: 10px;
+}
+
+.done-button {
+  /* Style your "Done" button */
+  /* Example styles: */
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
   

@@ -6,7 +6,7 @@
             <li v-for="menuItem in filteredMenuItems" :key="menuItem.id">
                 <div>
                 {{ menuItem.name }} - ${{ menuItem.price }}
-                <button @click="redirectToToppings(menuItem.id)">Add to Order</button>
+                <button @click="redirectToToppings(menuItem)">Add to Order</button>
                 </div>
             </li>
             </ul>
@@ -23,8 +23,9 @@ export default {
     },
   },
   methods: {
-    redirectToToppings(itemId) {
-      this.$router.push({ name: 'Toppings', params: { itemId } });
+    redirectToToppings(item) {
+      this.$emit('itemChosen', item);
+      this.$router.push({ name: 'Toppings', params: { } });
     },
   },
 };

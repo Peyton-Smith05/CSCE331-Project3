@@ -152,6 +152,16 @@ app.get('/menu-items', async (req, res) => {
   }
 });
 
+app.get('/menu-items/toppings', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'topping\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
 // Define the port
 const PORT = 3000;
 

@@ -8,7 +8,7 @@
         </li>
       </ul>
     </div>
-    <router-view :filteredMenuItems="filteredMenuItems">
+    <router-view :filteredMenuItems="filteredMenuItems" @itemChosen="selectItem" @sendOrder="addItemToOrder">
 
     </router-view>
     <div class="ordered-items-wrapper">
@@ -17,7 +17,22 @@
         <ul>
           <li v-for="orderItem in orderedItems" :key="orderItem.id">
             <div>
-              {{ orderItem.name }} - ${{ orderItem.price }} - Quantity: {{ orderItem.quantity }}
+              <span @click="toggleDropdown(orderItem)">
+                {{ orderItem.name }} - ${{ orderItem.price }} - Quantity: {{ orderItem.quantity }}
+              </span>
+              <div v-if="orderItem.showDetails" class="item-details">
+                <p>Size: {{ orderItem.size }}</p>
+                <p>Temp: {{ orderItem.temp }}</p>
+                <p>Sugar Level: {{ orderItem.sugarLevel }}</p>
+                <p>Ice Level: {{ orderItem.iceLevel }}</p>
+                <p>Toppings:</p>
+                <ul>
+                  <li v-for="topping in orderItem.toppings" :key="topping.id">
+                  <p>{{ topping.name }} {{ topping.quantity }}</p>
+                  </li>
+                </ul>
+                <!-- Add other details as needed -->
+              </div>
               <button @click="removeItemFromOrder(orderItem)">Remove</button>
             </div>
           </li>
@@ -44,12 +59,26 @@
         selectedCategory: 0,
         respond: [],
         respondItems: [],
+        itemsID: 0,
+        selectedItem: {
+          id: -1,
+          name: '',
+          price: 0.0,
+          category: 0,
+          quantity: 0,
+          size: '',
+          sugarLevel: 0,
+          iceLevel: '',
+          temp: '',
+          toppings: [],
+          showDetails: false,
+          itemID: 0,
+        }
       };
     },
     created() {
       this.fetchCategory('http://localhost:3000/menu-items/category')
           // Call the second fetchData function or any other operations that depend on categories here
-      
       const menuItems_api = apiRedirect + "/menu-items";
       this.fetchMenuItems(menuItems_api)
         .then(() => {
@@ -75,27 +104,33 @@
             this.error = 'Failed to load users.';
           }
       },
-      addItemToOrder(menuItem) {
-        //if (menuItem.quantity > 0) {
+      addItemToOrder(selectedSize, selectedTemperature, selectedSugarLevel, selectedIceLevel, selectedToppings) {
           const existingItem = this.orderedItems.find(
-            (item) => item.id === menuItem.id
+            (item) => (item.id === this.selectedItem.id &&  item.size === selectedSize && item.temp === selectedTemperature &&  item.sugarLevel === selectedSugarLevel &&  item.iceLevel === selectedIceLevel && item.toppings === selectedToppings)
           );
 
-          if (existingItem) {
+          if (existingItem) { 
             existingItem.quantity++;
+            console.log("Increase Quantity");
           } else {
-            this.orderedItems.push({ ...menuItem, quantity: 1 });
+            this.selectedItem.size = selectedSize;
+            this.selectedItem.sugarLevel = selectedSugarLevel;
+            this.selectedItem.iceLevel = selectedIceLevel;
+            this.selectedItem.temp = selectedTemperature;
+            this.selectedItem.toppings = selectedToppings;
+            this.selectedItem.showDetails = false;
+            this.selectedItem.itemID = this.itemsID;
+            this.orderedItems.push(Object.assign({}, this.selectedItem));
+            this.itemsID++;
+            console.log("New Item");
           }
-        //} else {
-        //  alert("Item quantity must be greater than 0");
-        //}
       },
       removeItemFromOrder(orderItem) {
         if (orderItem.quantity > 1) {
           orderItem.quantity--;
         } else {
           this.orderedItems = this.orderedItems.filter(
-            (item) => item.id !== orderItem.id
+            (item) => item.itemID !== orderItem.itemID
           );
         }
       },
@@ -121,10 +156,6 @@
             (item) => item.category === categoryId
           )
         }
-        this.filteredMenuItems = this.removeDuplicates(this.filteredMenuItems);
-      },
-      orderSubmission() {
-
       },
       cleanItemName(item_name) {
         if(item_name[item_name.length - 1] == 'M' || item_name[item_name.length - 1] == 'L') {
@@ -132,9 +163,12 @@
         }
         return item_name;
       },
-      orderSubmission() {
-
-      }, 
+      selectItem(item){
+        this.selectedItem = item;
+      },
+      toggleDropdown(orderItem) {
+        orderItem.showDetails = !orderItem.showDetails;
+      },
     },
     computed: {
       itemCost() {
@@ -149,17 +183,17 @@
         }));
       },
       menuItems() {
-        return this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
+        return this.removeDuplicates(this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
         const matchingCategory = this.categories.find(category => category.name === item.category);
         const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
         return {
           id: index + 1,
-          name: item.name,
+          name: this.cleanItemName(item.name),
           price: item.price,
           category: categoryId,
           quantity: 1,
         };
-      });
+      }));
       },
       taxCost() {
         return this.orderedItems.reduce((acc, item) => {
@@ -171,18 +205,7 @@
           return (acc + item.price * item.quantity) * 1.07;
         }, 0);
       }
-    },
-    mounted() {
-      this.filteredMenuItems = this.menuItems;
-      axios.get('/api/menu-items')
-        .then((response) => {
-          this.menuItems = response.data;
-          this.filteredMenuItems = this.menuItems;
-        })
-        .catch((error) => {
-          console.error('error fetching menu items:', error);
-        })
-    },
+    }
   };
   </script>
   
@@ -215,6 +238,13 @@
     top: 10vh;
     background-color: #ccc;
     padding: 20px;
+  }
+
+  .indented-list {
+    padding-left: 20px; /* Adjust as needed for indentation */
+  }
+  .indented-list p {
+    margin-left: 20px; /* Adjust as needed for indentation */
   }
   
   .ribbon-tab ul {
