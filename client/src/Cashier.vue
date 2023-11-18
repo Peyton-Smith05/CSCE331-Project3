@@ -14,6 +14,11 @@
     <div class="ordered-items-wrapper">
       <div class="ordered-items">
         <h3>Ordered Items</h3>
+        <div class="total">
+          Items: ${{ itemCost }}<br>
+          Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
+          Total: ${{ parseFloat(totalCost).toFixed(2) }}
+        </div>
         <ul>
           <li v-for="orderItem in orderedItems" :key="orderItem.id">
             <div>
@@ -51,6 +56,7 @@
   import axios from 'axios';
 
   const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+
   export default {
     data() {
       return {
@@ -77,7 +83,8 @@
       };
     },
     created() {
-      this.fetchCategory('http://localhost:3000/menu-items/category')
+      const category_api = apiRedirect + "/menu-items/category";
+      this.fetchCategory(category_api);
           // Call the second fetchData function or any other operations that depend on categories here
       const menuItems_api = apiRedirect + "/menu-items";
       this.fetchMenuItems(menuItems_api)
@@ -106,10 +113,14 @@
       },
       addItemToOrder(selectedSize, selectedTemperature, selectedSugarLevel, selectedIceLevel, selectedToppings) {
           const existingItem = this.orderedItems.find(
-            (item) => (item.id === this.selectedItem.id &&  item.size === selectedSize && item.temp === selectedTemperature &&  item.sugarLevel === selectedSugarLevel &&  item.iceLevel === selectedIceLevel && item.toppings === selectedToppings)
+            (item) => (item.id === this.selectedItem.id && item.size === selectedSize && item.temp === selectedTemperature && item.sugarLevel === selectedSugarLevel && item.iceLevel === selectedIceLevel && this.arrayCompare(item.toppings, selectedToppings))
           );
 
-          if (existingItem) { 
+          console.log("New Order: " + this.selectedItem.id + " "+ selectedSize + " " + selectedTemperature + " " + selectedSugarLevel + " " + selectedIceLevel + " " + selectedToppings);
+
+          console.log(existingItem);
+
+          if (existingItem != undefined) { 
             existingItem.quantity++;
             console.log("Increase Quantity");
           } else {
@@ -124,6 +135,20 @@
             this.itemsID++;
             console.log("New Item");
           }
+      },
+      arrayCompare(arr1, arr2){
+        if (arr1.length !== arr2.length) {
+          return false;
+        }
+        
+        for (let i = 0; i < arr1.length; i++) {
+          // Compare properties of each object in the array
+          if (arr1[i].id !== arr2[i].id || arr1[i].quantity !== arr2[i].quantity) {
+            return false;
+          }
+        }
+        
+        return true;
       },
       removeItemFromOrder(orderItem) {
         if (orderItem.quantity > 1) {
@@ -157,6 +182,22 @@
           )
         }
       },
+      removeDuplicates(menuItems) {
+        let noDupMenu = [];
+        let UniqueItems = {};
+        for(let index in menuItems) {
+          let itemName = menuItems[index]['name'];
+          UniqueItems[itemName] = menuItems[index];
+        }
+        
+        for( let noDupItem in UniqueItems) {
+          noDupMenu.push(UniqueItems[noDupItem]);
+        }
+        return noDupMenu
+      },
+      orderSubmission() {
+
+      },
       cleanItemName(item_name) {
         if(item_name[item_name.length - 1] == 'M' || item_name[item_name.length - 1] == 'L') {
           item_name = item_name.substring(0, item_name.length - 2)
@@ -166,7 +207,7 @@
       selectItem(item){
         this.selectedItem = item;
       },
-      toggleDropdown(orderItem) {
+      toggleDropdown(orderItem){
         orderItem.showDetails = !orderItem.showDetails;
       },
     },
@@ -225,8 +266,33 @@
   }
   
   .total {
+    position: absolute;
+    top: 10;
+    right: 0;
     text-align: right;
     font-weight: bold;
+  }
+
+  .menu-items-wrapper {
+    flex: 1;
+    padding: 0 20px; 
+    border-left: 1px solid #ccc; 
+    border-right: 1px solid #ccc; 
+    overflow-y: auto; 
+  }
+
+  .ordered-items-wrapper {
+    flex: 1;
+    padding: 0 20px;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu-items-wrapper {
+    margin-right: 10px; 
   }
   
   .ribbon-tab {
