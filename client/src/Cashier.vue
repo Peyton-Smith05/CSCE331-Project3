@@ -8,19 +8,9 @@
         </li>
       </ul>
     </div>
-    <div class="menu-items-wrapper">
-      <div class="menu-items">
-        <h3>Menu Items</h3>
-        <ul>
-          <li v-for="menuItem in removeDuplicates(filteredMenuItems)" :key="menuItem.id">
-            <div>
-              {{ menuItem.name }} - ${{ menuItem.price }}
-              <button @click="addItemToOrder(menuItem)">Add to Order</button>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <router-view :filteredMenuItems="filteredMenuItems" @itemChosen="selectItem" @sendOrder="addItemToOrder">
+
+    </router-view>
     <div class="ordered-items-wrapper">
       <div class="ordered-items">
         <h3>Ordered Items</h3>
@@ -32,13 +22,31 @@
         <ul>
           <li v-for="orderItem in orderedItems" :key="orderItem.id">
             <div>
-              {{ orderItem.name }} - ${{ orderItem.price }} - Quantity: {{ orderItem.quantity }}
-              <!-- TODO: Create function that launches popup to customize item. -->
-              <button @click="customizeItem(orderItem)">Customize</button>
+              <span @click="toggleDropdown(orderItem)">
+                {{ orderItem.name }} - ${{ orderItem.price }} - Quantity: {{ orderItem.quantity }}
+              </span>
+              <div v-if="orderItem.showDetails" class="item-details">
+                <p>Size: {{ orderItem.size }}</p>
+                <p>Temp: {{ orderItem.temp }}</p>
+                <p>Sugar Level: {{ orderItem.sugarLevel }}</p>
+                <p>Ice Level: {{ orderItem.iceLevel }}</p>
+                <p>Toppings:</p>
+                <ul>
+                  <li v-for="topping in orderItem.toppings" :key="topping.id">
+                  <p>{{ topping.name }} {{ topping.quantity }}</p>
+                  </li>
+                </ul>
+                <!-- Add other details as needed -->
+              </div>
               <button @click="removeItemFromOrder(orderItem)">Remove</button>
             </div>
           </li>
         </ul>
+        <div class="total">
+          Items: ${{ itemCost }}<br>
+          Tax: ${{ taxCost }}<br>
+          Total: ${{ totalCost }}
+        </div>
       </div>
     </div>
   </div>
@@ -57,15 +65,32 @@
         selectedCategory: 0,
         respond: [],
         respondItems: [],
+        itemsID: 0,
+        selectedItem: {
+          id: -1,
+          name: '',
+          price: 0.0,
+          category: 0,
+          quantity: 0,
+          size: '',
+          sugarLevel: 0,
+          iceLevel: '',
+          temp: '',
+          toppings: [],
+          showDetails: false,
+          itemID: 0,
+        }
       };
     },
     created() {
       const category_api = apiRedirect + "/menu-items/category";
       this.fetchCategory(category_api);
           // Call the second fetchData function or any other operations that depend on categories here
-      
       const menuItems_api = apiRedirect + "/menu-items";
-      this.fetchMenuItems(menuItems_api); // Replace with the appropriate URL
+      this.fetchMenuItems(menuItems_api)
+        .then(() => {
+          this.filterByCategory(0); // After fetching menu items, apply filtering
+        });
     },
     methods: {
       async fetchCategory(whatToFetch) {
@@ -86,32 +111,66 @@
             this.error = 'Failed to load users.';
           }
       },
-      addItemToOrder(menuItem) {
-        //if (menuItem.quantity > 0) {
+      addItemToOrder(selectedSize, selectedTemperature, selectedSugarLevel, selectedIceLevel, selectedToppings) {
           const existingItem = this.orderedItems.find(
-            (item) => item.id === menuItem.id
+            (item) => (item.id === this.selectedItem.id && item.size === selectedSize && item.temp === selectedTemperature && item.sugarLevel === selectedSugarLevel && item.iceLevel === selectedIceLevel && this.arrayCompare(item.toppings, selectedToppings))
           );
 
-          if (existingItem !== undefined) {
+          console.log("New Order: " + this.selectedItem.id + " "+ selectedSize + " " + selectedTemperature + " " + selectedSugarLevel + " " + selectedIceLevel + " " + selectedToppings);
+
+          console.log(existingItem);
+
+          if (existingItem != undefined) { 
             existingItem.quantity++;
-            console.log("Selection passes on true side!");
+            console.log("Increase Quantity");
           } else {
-            this.orderedItems.push({ ...menuItem, quantity: 1 });
-            console.log("Selection passes on false side!");
+            this.selectedItem.size = selectedSize;
+            this.selectedItem.sugarLevel = selectedSugarLevel;
+            this.selectedItem.iceLevel = selectedIceLevel;
+            this.selectedItem.temp = selectedTemperature;
+            this.selectedItem.toppings = selectedToppings;
+            this.selectedItem.showDetails = false;
+            this.selectedItem.itemID = this.itemsID;
+            this.orderedItems.push(Object.assign({}, this.selectedItem));
+            this.itemsID++;
+            console.log("New Item");
           }
-        //} else {
-        //  alert("Item quantity must be greater than 0");
-        //}
       },
-      removeItemFromOrder(orderItem) {
-        const indexToRemove = this.orderedItems.findIndex(item => item.id === orderItem.id);
-        if (indexToRemove !== -1) {
-          if (orderItem.quantity > 1) {
-            this.orderedItems[indexToRemove].quantity--;
-          } else {
-            this.orderedItems.splice(indexToRemove, 1);
+      arrayCompare(arr1, arr2){
+        if (arr1.length !== arr2.length) {
+          return false;
+        }
+        
+        for (let i = 0; i < arr1.length; i++) {
+          // Compare properties of each object in the array
+          if (arr1[i].id !== arr2[i].id || arr1[i].quantity !== arr2[i].quantity) {
+            return false;
           }
         }
+        
+        return true;
+      },
+      removeItemFromOrder(orderItem) {
+        if (orderItem.quantity > 1) {
+          orderItem.quantity--;
+        } else {
+          this.orderedItems = this.orderedItems.filter(
+            (item) => item.itemID !== orderItem.itemID
+          );
+        }
+      },
+      removeDuplicates(menuItems) {
+        let noDupMenu = [];
+        let UniqueItems = {};
+        for(let index in menuItems) {
+          let itemName = menuItems[index]['name'];
+          UniqueItems[itemName] = menuItems[index];
+        }
+        
+        for( let noDupItem in UniqueItems) {
+          noDupMenu.push(UniqueItems[noDupItem]);
+        }
+        return noDupMenu
       },
       filterByCategory(categoryId) {
         this.selectedCategory = categoryId
@@ -145,6 +204,12 @@
         }
         return item_name;
       },
+      selectItem(item){
+        this.selectedItem = item;
+      },
+      toggleDropdown(orderItem){
+        orderItem.showDetails = !orderItem.showDetails;
+      },
     },
     computed: {
       itemCost() {
@@ -159,7 +224,7 @@
         }));
       },
       menuItems() {
-        return this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
+        return this.removeDuplicates(this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
         const matchingCategory = this.categories.find(category => category.name === item.category);
         const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
         return {
@@ -169,7 +234,7 @@
           category: categoryId,
           quantity: 1,
         };
-      });
+      }));
       },
       taxCost() {
         return this.orderedItems.reduce((acc, item) => {
@@ -181,18 +246,7 @@
           return (acc + item.price * item.quantity) * 1.07;
         }, 0);
       }
-    },
-    mounted() {
-      this.filteredMenuItems = this.menuItems;
-      axios.get(apiRedirect+ '/menu-items')
-        .then((response) => {
-          this.menuItems = response.data;
-          this.filteredMenuItems = this.menuItems;
-        })
-        .catch((error) => {
-          console.error('error fetching menu items:', error);
-        })
-    },
+    }
   };
   </script>
   
@@ -205,16 +259,13 @@
     top: 10vh;
     left: 10vw;
   }
-  
   .menu-items {
     overflow: auto;
     width: 45vw;
   }
   .ordered-items {
     padding: 20px 0; 
-  }
-
-  .ordered-items {
+    width: 50vw;
     position: relative;
   }
   
@@ -257,6 +308,13 @@
     top: 10vh;
     background-color: #ccc;
     padding: 20px;
+  }
+
+  .indented-list {
+    padding-left: 20px; /* Adjust as needed for indentation */
+  }
+  .indented-list p {
+    margin-left: 20px; /* Adjust as needed for indentation */
   }
   
   .ribbon-tab ul {
