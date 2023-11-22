@@ -8,6 +8,8 @@ import MenuItems from './Menu-Items.vue';
 
 import Carousel from './Carousel.vue';
 
+import Login from './Login.vue';
+
 const routes = [
   {
     path: '/',
@@ -36,6 +38,11 @@ const routes = [
         props: true,
       },
     ],
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login,
   },
   // Add more routes for other pages if needed
 ];

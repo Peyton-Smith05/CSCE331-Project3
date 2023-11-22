@@ -259,6 +259,10 @@
     top: 10vh;
     left: 10vw;
   }
+  .menu-items {
+    overflow: auto;
+    width: 45vw;
+  }
   .ordered-items {
     padding: 20px 0; 
     width: 50vw;
