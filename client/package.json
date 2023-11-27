@@ -12,11 +12,13 @@
     "dist": "^0.1.2",
     "vue": "^3.3.4",
     "vue-cli": "^2.9.6",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue3-google-login": "^2.0.25",
+    "vue3-google-oauth2": "^1.0.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.4.0",
     "serve": "^14.2.1",
-    "vite": "^4.4.11"
+    "vite": "^4.5.0"
   }
 }

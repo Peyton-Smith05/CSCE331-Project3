@@ -1,14 +1,22 @@
 const express = require('express');
 const cors = require('cors');
+const history = require('connect-history-api-fallback');
 require('dotenv').config();
 
-const path = __dirname + "/../client/dist/";
 const app = express();
+const path = __dirname + "/../client/dist/";
+
+history({
+  index: 'index.htmp'
+});
 
 // Middleware
 app.use(express.static(path));
 app.use(cors());
-app.use(express.json()); // for parsing application/json
+app.use(express.json());  // for parsing application/json
+app.use(history());       // Use since  SPA is not server side rendering.
+                          // At least for the majority. So, when you access 
+                          // /anything your web server won't redirect it to index.html. 
 
 const { Pool } = require('pg');
 
@@ -145,6 +153,16 @@ app.get('/menu-items/category', async (req, res) => {
 app.get('/menu-items', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+app.get('/menu-items/toppings', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'topping\'');
     res.json(rows);
   } catch (err) {
     console.error(err.message);
