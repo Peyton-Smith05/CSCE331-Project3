@@ -10,6 +10,11 @@ history({
   index: 'index.htmp'
 });
 
+const corsOptions = {
+  origin: 'http://localhost:5173', // TODO : CHANGE BEFORE MERGE!!!!!!
+  methods: 'POST'
+};
+
 // Middleware
 app.use(express.static(path));
 app.use(cors());
@@ -169,6 +174,85 @@ app.get('/menu-items/toppings', async (req, res) => {
     res.status(500).json('Server error');
   }
 });
+
+
+app.get('/drinkid', async (req, res) => {
+  try { 
+    const { rows } = await pool.query('SELECT MAX(drinkid) FROM drink');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+})
+
+app.get('/orderid', async (req, res) => {
+  try { 
+    const { rows } = await pool.query('SELECT MAX(orderid) FROM order_log');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+})
+
+app.get('/toppingid', async (req, res) => {
+  try { 
+    const { rows } = await pool.query('SELECT MAX(toppingid) FROM topping');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+})
+
+app.post('/api/order', cors(corsOptions), async (req, res) => {
+  const { orderid, empid, date, time, total, tip } = req.body;
+  console.log(orderid);
+  
+  const insertQuery = 'INSERT INTO order_log(orderid, empid, date, time, total, tip) VALUES($1, $2, $3, $4, $5, $6)';
+
+  try {
+      await pool.query(insertQuery, [orderid, empid, date, time, total, tip]);
+      res.status(201).send('Order log created successfully');
+  } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+  }
+});
+
+app.post('/api/drink', cors(corsOptions), async (req, res) => {
+  const { drinkid, orderid, name, category, size, temp, ice_level, sugar_level, price } = req.body;
+
+  console.log(drinkid);
+
+  const insertQuery = 'INSERT INTO drink(drinkid, orderid, name, category, size, temp, ice_level, sugar_level, price) VALUES($1, 2$, 3$, 4$, 5$, 6$, 7$, 8$, 9$)';
+
+  try {
+    await pool.query(insertQuery, [drinkid, orderid, name, category, size, temp, ice_level, sugar_level, price]);
+    res.status(201).send('Drink created successfully');
+  } catch {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+})
+
+app.post('/api/topping', cors(corsOptions), async (req, res) => {
+  const { toppingid, drinkid, name, quantity, price } = req.body;
+
+  console.log(toppingid);
+
+  const insertQuery = 'INSERT INTO topping(toppingid, drinkid, name, quantity, price) VALUES($1, 2$, 3$, 4$, 5$)';
+
+  try {
+    await pool.query(insertQuery, [toppingid, drinkid, name, quantity, price]);
+    res.status(201).send('Drink created successfully');
+  } catch {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+})
+
 
 // Define the port
 const PORT = 3000;

@@ -1,24 +1,26 @@
 <template>
   <div class="cashier-interface">
     <div class="ribbon-tab">
+      <!-- <ul>
+        <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
+        <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id }">
+          <a @click="filterByCategory(category.id)">{{ category.name }}</a>
+        </li>
+      </ul> -->
       <ul>
         <li @click="filterByCategory(0)" :class="{ selected: selectedCategory === 0 }">All</li>
-        <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id}">
+        <li v-for="category in categories" :key="category.id" :class="{ selected: selectedCategory === category.id }">
           <a @click="filterByCategory(category.id)">{{ category.name }}</a>
         </li>
       </ul>
     </div>
-    <router-view :filteredMenuItems="filteredMenuItems" @itemChosen="selectItem" @sendOrder="addItemToOrder">
-
-    </router-view>
+    <div class="menu-items-wrapper">
+      <router-view :filteredMenuItems="filteredMenuItems" @itemChosen="selectItem"
+        @sendOrder="addItemToOrder"></router-view>
+    </div>
     <div class="ordered-items-wrapper">
       <div class="ordered-items">
         <h3>Ordered Items</h3>
-        <div class="total">
-          Items: ${{ itemCost }}<br>
-          Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
-          Total: ${{ parseFloat(totalCost).toFixed(2) }}
-        </div>
         <ul>
           <li v-for="orderItem in orderedItems" :key="orderItem.id">
             <div>
@@ -33,10 +35,9 @@
                 <p>Toppings:</p>
                 <ul>
                   <li v-for="topping in orderItem.toppings" :key="topping.id">
-                  <p>{{ topping.name }} {{ topping.quantity }}</p>
+                    <p>{{ topping.name }} {{ topping.quantity }}</p>
                   </li>
                 </ul>
-                <!-- Add other details as needed -->
               </div>
               <button @click="removeItemFromOrder(orderItem)">Remove</button>
             </div>
@@ -49,182 +50,181 @@
         </div>
       </div>
     </div>
+    <div class="footer">
+      <button class="checkout-button" :disabled="!isCartNotEmpty" :class="{ 'inactive': !isCartNotEmpty }"
+        @click="goToCheckout">
+        Checkout
+      </button>
+    </div>
   </div>
 </template>
   
-  <script>
-  import axios from 'axios';
+<script>
+import axios from 'axios';
 
-  const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+const apiRedirect = (window.location.href.slice(0, 17) == "http://localhost:") ? "http://localhost:3000" : "";
 
-  export default {
-    data() {
-      return {
-        orderedItems: [],
-        filteredMenuItems: [],
-        selectedCategory: 0,
-        respond: [],
-        respondItems: [],
-        itemsID: 0,
-        selectedItem: {
-          id: -1,
-          name: '',
-          price: 0.0,
-          category: 0,
-          quantity: 0,
-          size: '',
-          sugarLevel: 0,
-          iceLevel: '',
-          temp: '',
-          toppings: [],
-          showDetails: false,
-          itemID: 0,
-        }
-      };
+export default {
+  data() {
+    return {
+      orderedItems: [],
+      filteredMenuItems: [],
+      // selectedCategory: 0,
+      respond: [],
+      respondItems: [],
+      itemsID: 0,
+      selectedItem: {
+        id: -1,
+        name: '',
+        price: 0.0,
+        category: 0,
+        quantity: 0,
+        size: '',
+        sugarLevel: 0,
+        iceLevel: '',
+        temp: '',
+        toppings: [],
+        showDetails: false,
+        itemID: 0,
+      }
+    };
+  },
+  created() {
+    
+    this.$store.dispatch('menu/fetchMenuData');
+    console.log(this.$store.getters['menu/allCategories']);
+    console.log(this.$store.getters['menu/selectedCategory']);
+  
+    this.filterByCategory(0);
+
+  },
+  methods: { // NOTE: I am currently trying to change where they get the category and menu item data
+    addItemToOrder(selectedSize, selectedTemperature, selectedSugarLevel, selectedIceLevel, selectedToppings) {
+      const existingItem = this.orderedItems.find(
+        (item) => (item.id === this.selectedItem.id && item.size === selectedSize && item.temp === selectedTemperature && item.sugarLevel === selectedSugarLevel && item.iceLevel === selectedIceLevel && this.arrayCompare(item.toppings, selectedToppings))
+      );
+
+      console.log("New Order: " + this.selectedItem.id + " " + selectedSize + " " + selectedTemperature + " " + selectedSugarLevel + " " + selectedIceLevel + " " + selectedToppings);
+
+      console.log(existingItem);
+
+      if (existingItem != undefined) {
+        existingItem.quantity++;
+        console.log("Increase Quantity");
+      } else {
+        this.selectedItem.size = selectedSize;
+        this.selectedItem.sugarLevel = selectedSugarLevel;
+        this.selectedItem.iceLevel = selectedIceLevel;
+        this.selectedItem.temp = selectedTemperature;
+        this.selectedItem.toppings = selectedToppings;
+        this.selectedItem.showDetails = false;
+        this.selectedItem.itemID = this.itemsID;
+        this.orderedItems.push(Object.assign({}, this.selectedItem));
+        this.itemsID++;
+        console.log("New Item");
+      }
     },
-    created() {
-      const category_api = apiRedirect + "/menu-items/category";
-      this.fetchCategory(category_api);
-          // Call the second fetchData function or any other operations that depend on categories here
-      const menuItems_api = apiRedirect + "/menu-items";
-      this.fetchMenuItems(menuItems_api)
-        .then(() => {
-          this.filterByCategory(0); // After fetching menu items, apply filtering
-        });
-    },
-    methods: {
-      async fetchCategory(whatToFetch) {
-        try {
-          const response = await axios.get(whatToFetch);
-          this.respond = response.data;
-        } catch (error) {
-          console.error(error);
-          this.error = 'Failed to load users.';
-        }
-      },
-      async fetchMenuItems(whatToFetch) {
-          try {
-            const response = await axios.get(whatToFetch);
-            this.respondItems = response.data;
-          } catch (error) {
-            console.error(error);
-            this.error = 'Failed to load users.';
-          }
-      },
-      addItemToOrder(selectedSize, selectedTemperature, selectedSugarLevel, selectedIceLevel, selectedToppings) {
-          const existingItem = this.orderedItems.find(
-            (item) => (item.id === this.selectedItem.id && item.size === selectedSize && item.temp === selectedTemperature && item.sugarLevel === selectedSugarLevel && item.iceLevel === selectedIceLevel && this.arrayCompare(item.toppings, selectedToppings))
-          );
+    arrayCompare(arr1, arr2) {
+      if (arr1.length !== arr2.length) {
+        return false;
+      }
 
-          console.log("New Order: " + this.selectedItem.id + " "+ selectedSize + " " + selectedTemperature + " " + selectedSugarLevel + " " + selectedIceLevel + " " + selectedToppings);
-
-          console.log(existingItem);
-
-          if (existingItem != undefined) { 
-            existingItem.quantity++;
-            console.log("Increase Quantity");
-          } else {
-            this.selectedItem.size = selectedSize;
-            this.selectedItem.sugarLevel = selectedSugarLevel;
-            this.selectedItem.iceLevel = selectedIceLevel;
-            this.selectedItem.temp = selectedTemperature;
-            this.selectedItem.toppings = selectedToppings;
-            this.selectedItem.showDetails = false;
-            this.selectedItem.itemID = this.itemsID;
-            this.orderedItems.push(Object.assign({}, this.selectedItem));
-            this.itemsID++;
-            console.log("New Item");
-          }
-      },
-      arrayCompare(arr1, arr2){
-        if (arr1.length !== arr2.length) {
+      for (let i = 0; i < arr1.length; i++) {
+        // Compare properties of each object in the array
+        if (arr1[i].id !== arr2[i].id || arr1[i].quantity !== arr2[i].quantity) {
           return false;
         }
-        
-        for (let i = 0; i < arr1.length; i++) {
-          // Compare properties of each object in the array
-          if (arr1[i].id !== arr2[i].id || arr1[i].quantity !== arr2[i].quantity) {
-            return false;
-          }
-        }
-        
-        return true;
-      },
-      removeItemFromOrder(orderItem) {
-        if (orderItem.quantity > 1) {
-          orderItem.quantity--;
-        } else {
-          this.orderedItems = this.orderedItems.filter(
-            (item) => item.itemID !== orderItem.itemID
-          );
-        }
-      },
-      removeDuplicates(menuItems) {
-        let noDupMenu = [];
-        let UniqueItems = {};
-        for(let index in menuItems) {
-          let itemName = menuItems[index]['name'];
-          UniqueItems[itemName] = menuItems[index];
-        }
-        
-        for( let noDupItem in UniqueItems) {
-          noDupMenu.push(UniqueItems[noDupItem]);
-        }
-        return noDupMenu
-      },
-      filterByCategory(categoryId) {
-        this.selectedCategory = categoryId
-        if (categoryId === 0) {
-          this.filteredMenuItems = this.menuItems;
-        } else {
-          this.filteredMenuItems = this.menuItems.filter(
-            (item) => item.category === categoryId
-          )
-        }
-      },
-      removeDuplicates(menuItems) {
-        let noDupMenu = [];
-        let UniqueItems = {};
-        for(let index in menuItems) {
-          let itemName = menuItems[index]['name'];
-          UniqueItems[itemName] = menuItems[index];
-        }
-        
-        for( let noDupItem in UniqueItems) {
-          noDupMenu.push(UniqueItems[noDupItem]);
-        }
-        return noDupMenu
-      },
-      orderSubmission() {
+      }
 
-      },
-      cleanItemName(item_name) {
-        if(item_name[item_name.length - 1] == 'M' || item_name[item_name.length - 1] == 'L') {
-          item_name = item_name.substring(0, item_name.length - 2)
-        }
-        return item_name;
-      },
-      selectItem(item){
-        this.selectedItem = item;
-      },
-      toggleDropdown(orderItem){
-        orderItem.showDetails = !orderItem.showDetails;
-      },
+      return true;
     },
-    computed: {
-      itemCost() {
-        return this.orderedItems.reduce((acc, item) => {
-          return acc + item.price * item.quantity;
-        }, 0);
-      },
-      categories() {
-        return this.respond.filter(category => category.category !== "topping").map((category, index) => ({
-          id: index + 1,
-          name: category.category,
-        }));
-      },
-      menuItems() {
-        return this.removeDuplicates(this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
+    removeItemFromOrder(orderItem) {
+      if (orderItem.quantity > 1) {
+        orderItem.quantity--;
+      } else {
+        this.orderedItems = this.orderedItems.filter(
+          (item) => item.itemID !== orderItem.itemID
+        );
+      }
+    },
+    removeDuplicates(menuItems) {
+      let noDupMenu = [];
+      let UniqueItems = {};
+      for (let index in menuItems) {
+        let itemName = menuItems[index]['name'];
+        UniqueItems[itemName] = menuItems[index];
+      }
+
+      for (let noDupItem in UniqueItems) {
+        noDupMenu.push(UniqueItems[noDupItem]);
+      }
+      return noDupMenu
+    },
+    filterByCategory(categoryId) {
+      // this.selectedCategory = categoryId
+      // if (categoryId === 0) {
+      //   this.filteredMenuItems = this.menuItems;
+      // } else {
+      //   this.filteredMenuItems = this.menuItems.filter(
+      //     (item) => item.category === categoryId
+      //   )
+      // }
+      this.$store.dispatch('menu/changeSelectedCategory', categoryId);
+    },
+    removeDuplicates(menuItems) {
+      let noDupMenu = [];
+      let UniqueItems = {};
+      for (let index in menuItems) {
+        let itemName = menuItems[index]['name'];
+        UniqueItems[itemName] = menuItems[index];
+      }
+
+      for (let noDupItem in UniqueItems) {
+        noDupMenu.push(UniqueItems[noDupItem]);
+      }
+      return noDupMenu
+    },
+    orderSubmission() {
+
+    },
+    cleanItemName(item_name) {
+      if (item_name[item_name.length - 1] == 'M' || item_name[item_name.length - 1] == 'L') {
+        item_name = item_name.substring(0, item_name.length - 2)
+      }
+      return item_name;
+    },
+    selectItem(item) {
+      this.selectedItem = item;
+    },
+    toggleDropdown(orderItem) {
+      orderItem.showDetails = !orderItem.showDetails;
+    },
+    goToCheckout() {
+      this.$router.push({
+        name: 'Checkout',
+        query: {
+          cartItems: JSON.stringify(this.orderedItems),
+          total: JSON.stringify(this.totalCost),
+          tax: JSON.stringify(this.taxCost)
+        }
+      });
+    }
+  },
+  computed: {
+    itemCost() {
+      return this.orderedItems.reduce((acc, item) => {
+        return acc + item.price * item.quantity;
+      }, 0);
+    },
+    categories() {
+      // return this.respond.filter(category => category.category !== "topping").map((category, index) => ({
+      //   id: index + 1,
+      //   name: category.category,
+      // }));
+      return this.$store.getters['menu/allCategories'];
+    },
+    menuItems() {
+      return this.removeDuplicates(this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
         const matchingCategory = this.categories.find(category => category.name === item.category);
         const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
         return {
@@ -235,124 +235,201 @@
           quantity: 1,
         };
       }));
-      },
-      taxCost() {
-        return this.orderedItems.reduce((acc, item) => {
-          return (acc + item.price * item.quantity) * 0.07;
-        }, 0);
-      },
-      totalCost() {
-        return this.orderedItems.reduce((acc, item) => {
-          return (acc + item.price * item.quantity) * 1.07;
-        }, 0);
-      }
+    },
+    taxCost() {
+      const tax = this.orderedItems.reduce((acc, item) => {
+        return (acc + item.price * item.quantity) * 0.07;
+      }, 0);
+      return tax.toFixed(2);
+    },
+    totalCost() {
+      const total = this.orderedItems.reduce((acc, item) => {
+        return (acc + item.price * item.quantity) * 1.07;
+      }, 0);
+      return total.toFixed(2);
+    },
+    isCartNotEmpty() {
+      return this.orderedItems.length > 0;
+    },
+    selectedCategory() {
+      return this.$store.state.menu.selectedCategory;
     }
-  };
-  </script>
+  }
+};
+</script>
   
-  <style scoped>
-  .cashier-interface {
-    display: flex;
-    width: 90vw;
-    height: 90vh;
-    position: absolute;
-    top: 10vh;
-    left: 10vw;
-  }
-  .menu-items {
-    overflow: auto;
-    width: 45vw;
-  }
-  .ordered-items {
-    padding: 20px 0; 
-    width: 50vw;
-    position: relative;
-  }
-  
-  .total {
-    position: absolute;
-    top: 10;
-    right: 0;
-    text-align: right;
-    font-weight: bold;
-  }
+<style scoped>
+.cashier-interface {
+  display: flex;
+  width: 100vw;
+  height: 90vh;
+  position: absolute;
+  top: 10vh;
+  left: 0vw;
+  font-size: 16px;
+  font-family: 'Arial', sans-serif;
+}
 
-  .menu-items-wrapper {
-    flex: 1;
-    padding: 0 20px; 
-    border-left: 1px solid #ccc; 
-    border-right: 1px solid #ccc; 
-    overflow-y: auto; 
-  }
+.menu-items {
+  overflow: auto;
+}
 
-  .ordered-items-wrapper {
-    flex: 1;
-    padding: 0 20px;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    overflow-y: auto;
-    display: flex;
+.menu-items-wrapper {
+  flex: 1 1 70%;
+  padding: 0 20px;
+  overflow-y: auto;
+}
+
+.ordered-items-wrapper {
+  flex: 1 1 20%;
+  background: #333;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  color: #fff;
+}
+
+.ordered-items h3 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.ordered-items ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ordered-items li {
+  padding: 10px;
+  border-bottom: 1px solid #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.ordered-items li:hover {
+  background-color: #000;
+}
+
+.ordered-items li div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ordered-items span {
+  font-weight: bold;
+}
+
+.item-details {
+  padding: 10px;
+  background: #000;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.item-details p {
+  margin: 5px 0;
+}
+
+button {
+  padding: 5px 15px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #c0392b;
+}
+
+.total {
+  margin-top: 20px;
+  text-align: right;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .ordered-items li div {
     flex-direction: column;
+    align-items: flex-start;
   }
+}
 
-  .menu-items-wrapper {
-    margin-right: 10px; 
-  }
-  
-  .ribbon-tab {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 90vh;
-    width: 10vw;
-    top: 10vh;
-    background-color: #ccc;
-    padding: 20px;
-  }
+.ribbon-tab {
+  flex: 1 1 10%;
+  top: 0;
+  left: 0;
+  height: 90vh;
+  top: 10vh;
+  background-color: rgb(65, 65, 65);
+  padding: 20px;
+}
 
-  .indented-list {
-    padding-left: 20px; /* Adjust as needed for indentation */
-  }
-  .indented-list p {
-    margin-left: 20px; /* Adjust as needed for indentation */
-  }
-  
-  .ribbon-tab ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .ribbon-tab li {
-    margin-bottom: 10px;
-  }
-  
-  .ribbon-tab li:first-child { /* Style the All category button */
-    display: block;
-    padding: 10px;
-    text-decoration: none; /* Removed default text highlighting */
-    color: #333;
-    border: 1px solid #ccc;
-    cursor: pointer; /* Added cursor pointer for clickability */
-  }
-  
-  .ribbon-tab li.selected { /* Style the selected category button */
-    background-color: #007bff;
-    color: #fff;
-    border: 1px solid #007bff;
-  }
-  
-  .ribbon-tab a {
-    display: block;
-    padding: 10px;
-    text-decoration: none; /* Removed default text highlighting */
-    color: #333;
-    cursor: pointer; /* Added cursor pointer for clickability */
-  }
-  
-  .ribbon-tab a.selected { /* Style the selected category button */
-    background-color: #007bff;
-    color: #fff;
-  }
-  
-  </style>
+.ribbon-tab ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ribbon-tab li {
+  margin-bottom: 10px;
+}
+
+.ribbon-tab li:first-child {
+  display: block;
+  padding: 5px;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.ribbon-tab a {
+  display: block;
+  padding: 5px;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.ribbon-tab a.selected {
+  background-color: #ff0000;
+  color: #fff;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #f5f5f5;
+  padding: 10px 20px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.checkout-button {
+  padding: 10px 20px;
+  background-color: #ff1a1a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.checkout-button:hover {
+  background-color: #dc6060;
+}
+
+.checkout-button.inactive {
+  background-color: grey;
+  cursor: not-allowed;
+}</style>

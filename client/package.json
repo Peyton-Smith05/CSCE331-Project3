@@ -10,11 +10,12 @@
   "dependencies": {
     "axios": "^1.6.0",
     "dist": "^0.1.2",
-    "vue": "^3.3.4",
+    "vue": "^3.2.36",
     "vue-cli": "^2.9.6",
     "vue-router": "^4.2.5",
     "vue3-google-login": "^2.0.25",
-    "vue3-google-oauth2": "^1.0.7"
+    "vue3-google-oauth2": "^1.0.7",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.4.0",

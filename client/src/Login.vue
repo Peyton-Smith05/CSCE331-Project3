@@ -31,6 +31,7 @@ export default {
             callback:(response) => {
                 console.log("logged in");
                 console.log(response);
+                this.goToCashier();
             }
         }
     },
@@ -38,7 +39,10 @@ export default {
         goToCashier() {
         // Navigate to the cashier interface page using Vue Router
         this.$router.push('/cashier');
-      },
+        },
+        goTocustomer() {
+            this.$router.push('/customer');
+        },
     },
 }
 </script>
