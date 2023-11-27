@@ -8,13 +8,13 @@
         <div class="login-entry">
             <form class="login-container">
                 <label id="email-label" for="email">Login:</label>
-                <input id="email-entry" type="text" onfocus="this.value=''" value="email@example.com">
+                <input id="email-entry" type="text" v-model="email" placeholder="email@example.com">
                 <br>
                 <label id="pswd-label" for="pswd">Password:</label>
-                <input id="pswd-entry" type="text" onfocus="this.value=''" value="E.g. 1234">
+                <input id="pswd-entry" type="text" v-model="pswd" placeholder="E.g. 1234">
                 <br>
                 <div class="login-sections">
-                    <input @click="goToCashier()" id="submit-btn" type="submit">
+                    <input @click="login(email, pswd)" id="submit-btn" type="button" value="Submit">
                     <br>
                     <GoogleLogin class="google-oauth" :callback="callback" prompt auto-login/>
                 </div>
@@ -24,21 +24,35 @@
 </body>
 </template>
 <script>
+import axios from 'axios'
+
+const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 
 export default {
     data() {
         return {
             callback:(response) => {
-                console.log("logged in");
-                console.log(response);
-            }
+                this.goToCashier()
+            },
+            email: "",
+            pswd: "",
         }
     },
     methods: {
+        async login(email, pswd) {
+            // Creating API request to check and verify email and pswd
+            // from server side.
+            try {
+                const response = await axios.get(apiRedirect + "/user/credentials");
+            } catch(error) {
+                console.error(error);
+            }
+            return;
+        },
         goToCashier() {
-        // Navigate to the cashier interface page using Vue Router
-        this.$router.push('/cashier');
-      },
+            // Navigate to the cashier interface page using Vue Router
+            this.$router.push('/cashier');
+        },
     },
 }
 </script>

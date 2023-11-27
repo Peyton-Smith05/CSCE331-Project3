@@ -170,6 +170,13 @@ app.get('/menu-items/toppings', async (req, res) => {
   }
 });
 
+// ============= LOGIN PORTION to request passwords =============
+app.get('/user/credentials/:email/:pswd', async (req, res) => {
+  
+  console.log(pswd + " " + email);
+  res.json(email, pswd);
+})
+
 // Define the port
 const PORT = 3000;
 
