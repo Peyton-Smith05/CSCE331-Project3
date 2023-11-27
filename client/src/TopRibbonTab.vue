@@ -1,5 +1,5 @@
 <template>
-  <div class="top-ribbon-tab" v-show="$route.path !== '/login'">
+  <div class="top-ribbon-tab" v-show="$route.path !== '/login' || $route.path !=='/manager'">
     <router-link to="/login">
       <button @click="goToLoginInterface()">Order Now</button>
     </router-link>

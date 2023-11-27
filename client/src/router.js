@@ -4,7 +4,8 @@ import Toppings from './Toppings.vue';
 import MenuItems from './Menu-Items.vue';
 import Carousel from './Carousel.vue';
 import Login from './Login.vue';
-import Checkout from './Checkout.vue'
+import Checkout from './Checkout.vue';
+import Manager from './Manager.vue';
 
 const routes = [
   {
@@ -45,6 +46,11 @@ const routes = [
     path: '/checkout',
     name: 'Checkout',
     component: Checkout,
+  },
+  {
+    path: '/manager',
+    name: "Manager",
+    component: Manager,
   },
 ];
 
