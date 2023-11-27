@@ -8,13 +8,13 @@
         <div class="login-entry">
             <form class="login-container">
                 <label id="email-label" for="email">Login:</label>
-                <input id="email-entry" type="text" onfocus="this.value=''" value="email@example.com">
+                <input id="email-entry" type="text" v-model="email" placeholder="email@example.com">
                 <br>
                 <label id="pswd-label" for="pswd">Password:</label>
-                <input id="pswd-entry" type="text" onfocus="this.value=''" value="E.g. 1234">
+                <input id="pswd-entry" type="password" v-model="pswd" placeholder="e.g 1234">
                 <br>
                 <div class="login-sections">
-                    <input @click="goToCashier()" id="submit-btn" type="submit">
+                    <input @click="login()" id="submit-btn" type="button" value="Submit">
                     <br>
                     <GoogleLogin class="google-oauth" :callback="callback" prompt auto-login/>
                 </div>
@@ -24,6 +24,9 @@
 </body>
 </template>
 <script>
+import axios from 'axios'
+
+const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 
 export default {
     data() {
@@ -31,14 +34,45 @@ export default {
             callback:(response) => {
                 console.log("logged in");
                 console.log(response);
-            }
+                this.goToCashier();
+            },
+            email: '',
+            pswd:  '',
         }
     },
     methods: {
+        async login() {
+            const query = apiRedirect + "/login/info/" + this.email + "/" + this.pswd;
+            console.log(query);
+            try {
+                const response = await axios.get(query);
+                const user_info = response.data[0];
+                
+                // Start routing to customer, cashier, and manager.
+                if(user_info.title == "Cashier") {
+                    this.goToCashier();
+                } else if(user_info.title == "Manager") {
+                    this.goToManager();
+                } else if(user_info.title == "Customer") {
+                    this.goToCustomer();   
+                }
+            } catch (error) {
+                // TODO: Create wrong user info popup.
+                console.error(error);
+            }
+        },
         goToCashier() {
-        // Navigate to the cashier interface page using Vue Router
-        this.$router.push('/cashier');
-      },
+            // Navigate to the cashier interface page using Vue Router
+            this.$router.push('/cashier');
+        },
+        goToCustomer() {
+            this.$router.push('/customer');
+        },
+        goToManager() {
+            // TODO create rerouting to manager site.
+            console.log("Rerouting to manager side");
+            this.$router.push('/manager');
+        },
     },
 }
 </script>

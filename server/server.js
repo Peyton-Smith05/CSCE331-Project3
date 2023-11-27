@@ -18,7 +18,7 @@ app.use(history());       // Use since  SPA is not server side rendering.
                           // At least for the majority. So, when you access 
                           // /anything your web server won't redirect it to index.html. 
 
-const { Pool } = require('pg');
+const { Pool, DatabaseError } = require('pg');
 
 const pool = new Pool({
     user: process.env.PSQL_USER,
@@ -159,6 +159,32 @@ app.get('/menu-items', async (req, res) => {
     res.status(500).json('Server error');
   }
 });
+
+app.get('/menu-items/toppings', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'topping\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+// ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
+app.get("/login/info/:email/:pswd", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\' AND password = \'" + req.params.pswd + "\'");
+    if (rows.length == 0) {
+      res.status(404).json('Could not find user');
+    }
+    else {
+      res.json(rows);
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).json('Could not find user');
+  }
+})
 
 // Define the port
 const PORT = 3000;
