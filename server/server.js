@@ -186,6 +186,22 @@ app.get("/login/info/:email/:pswd", async (req, res) => {
   }
 })
 
+// This one uses google OAuth and the simple email to check what our data.
+app.get("login/info/google/:email", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
+    if(rows.length == 0) {
+      res.status(404).json('Could not find user with email ', req.params.email);
+    } else {
+      res.json(rows);
+    }
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).json('Could not find user with email ', req.params.email);
+  }
+})
+
 // Define the port
 const PORT = 3000;
 

@@ -25,6 +25,8 @@
 </template>
 <script>
 import axios from 'axios'
+import { googleOneTap } from 'vue3-google-login'
+import { decodeCredential } from 'vue3-google-login'
 
 const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 
@@ -32,9 +34,16 @@ export default {
     data() {
         return {
             callback:(response) => {
-                console.log("logged in");
-                console.log(response);
-                this.goToCashier();
+                googleOneTap({ autoLigin: true })
+                .then((response) => {
+                    const userData = decodeCredential(response.credential)
+                    this.email = userData.email
+                    // Handling email from backend.
+                    handleGoogleOAuth();
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
             },
             email: '',
             pswd:  '',
@@ -42,10 +51,9 @@ export default {
     },
     methods: {
         async login() {
-            const query = apiRedirect + "/login/info/" + this.email + "/" + this.pswd;
-            console.log(query);
             try {
-                const response = await axios.get(query);
+                const login_query = apiRedirect + "/login/info/" + this.email + "/" + this.pswd;
+                const response = await axios.get(login_query);
                 const user_info = response.data[0];
                 
                 // Start routing to customer, cashier, and manager.
@@ -57,10 +65,34 @@ export default {
                     this.goToCustomer();   
                 }
             } catch (error) {
-                // TODO: Create wrong user info popup.
+                addPopupError()
                 console.error(error);
             }
         },
+        async handleGoogleOAuth() {
+            try {
+                const google_login_query = apiRedirect + "/login/info/" + this.email;
+                const response = await axios.get(google_login_query);
+                const user_info = response.data[0];
+                
+                // Start routing to customer, cashier, and manager.
+                if(user_info.title == "Cashier") {
+                    this.goToCashier();
+                } else if(user_info.title == "Manager") {
+                    this.goToManager();
+                } else if(user_info.title == "Customer") {
+                    this.goToCustomer();   
+                }
+            } catch (error) {
+                addPopupError()
+                console.error(error);
+            }
+        },
+
+        addPopupError() {
+            // TODO: Create wrong user info popup.
+        },
+        
         goToCashier() {
             // Navigate to the cashier interface page using Vue Router
             this.$router.push('/cashier');
