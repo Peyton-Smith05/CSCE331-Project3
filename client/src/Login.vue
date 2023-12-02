@@ -34,7 +34,7 @@ export default {
             callback:(response) => {
                 console.log("logged in");
                 console.log(response);
-                this.goToCashier();
+                this.goToCustomer();
             },
             email: '',
             pswd:  '',
@@ -61,17 +61,32 @@ export default {
                 console.error(error);
             }
         },
-        goToCashier() {
+        goToCashier(empid) {
             // Navigate to the cashier interface page using Vue Router
-            this.$router.push('/cashier');
+            this.$router.push({
+                name: 'Cashier',
+                query: {
+                    empid: JSON.stringify(empid),
+                }
+            });
         },
         goToCustomer() {
-            this.$router.push('/customer');
+            this.$router.push({
+                name: 'Customer',
+                query: {
+                    empid: JSON.stringify(0),
+                }
+            });
         },
-        goToManager() {
+        goToManager(empid) {
             // TODO create rerouting to manager site.
             console.log("Rerouting to manager side");
-            this.$router.push('/manager');
+            this.$router.push({
+                name: 'Manager',
+                query: {
+                    empid: JSON.stringify(empid),
+                }
+            });
         },
     },
 }

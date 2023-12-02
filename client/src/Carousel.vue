@@ -1,4 +1,10 @@
 <template>
+  <div>
+    <TopRibbonTab/>
+    <router-view>
+
+    </router-view>
+  </div>
   <div class="carousel">
     <button @click="prevItem" class="arrow left-arrow">&lt;</button>
     <div v-for="(item, index) in carouselItems" :key="index" class="carousel-item" :class="{ active: index === currentIndex }">
@@ -12,7 +18,13 @@
 </template>
 
 <script>
+import TopRibbonTab from './TopRibbonTab.vue';
+
+
 export default {
+  components: {
+    TopRibbonTab
+  },
   data() {
     return {
       currentIndex: 0,
