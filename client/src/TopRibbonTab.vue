@@ -20,12 +20,17 @@
         <button>See Sales</button>
       </router-link>
     </nav>
+    
+    <img id='KFTLogo' src="./assets/Kung_Fu_Tea_Official_Logo.png" alt="" @click="goToLanding()">
   </div>
 </template>
   
   <script>
   export default {
     methods: {
+      goToLanding() {
+        this.$router.push('/');
+      },
       goToLoginInterface() {
         this.$router.push('/login');
       },
@@ -80,6 +85,14 @@
     padding: 10px 20px;
     margin: 10px;
     cursor: pointer;
+  }
+
+  #KFTLogo {
+    position: absolute;
+    top: 0;
+    right: 2.5vw;
+    width: 5vw;
+
   }
   </style>
   

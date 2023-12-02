@@ -1,6 +1,12 @@
 <template>
 <body>        
     <div class="login-page">
+        <LoginPopup v-if="popupError" :closePopup="() => closePopup()"> 
+            <h2> Log in error: </h2>
+            <br>
+            An incorrect email/password was provided. Please make sure to type the correct user information.
+            <br>
+        </LoginPopup>   
         <div class="login-logo">
             <img id="kft-banner" src="./assets/KFTBanner.jpg" alt="">
         </div>
@@ -20,17 +26,21 @@
                 </div>
             </form>
         </div>
-    </div>    
+    </div>
 </body>
 </template>
 <script>
 import axios from 'axios'
 import { googleOneTap } from 'vue3-google-login'
 import { decodeCredential } from 'vue3-google-login'
+import LoginPopup from './components/LoginPopup.vue'
 
 const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 
 export default {
+    components: {
+        LoginPopup
+    },
     data() {
         return {
             callback:(response) => {
@@ -47,6 +57,7 @@ export default {
             },
             email: '',
             pswd:  '',
+            popupError: false,
         }
     },
     methods: {
@@ -65,7 +76,7 @@ export default {
                     this.goToCustomer();   
                 }
             } catch (error) {
-                addPopupError()
+                this.openPopup()
                 console.error(error);
             }
         },
@@ -84,13 +95,15 @@ export default {
                     this.goToCustomer();   
                 }
             } catch (error) {
-                addPopupError()
-                console.error(error);
+                this.goToCashier();
             }
         },
 
-        addPopupError() {
-            // TODO: Create wrong user info popup.
+        openPopup() {
+            this.popupError = true;
+        },
+        closePopup() {
+            this.popupError = false;
         },
         
         goToCashier() {
