@@ -1,6 +1,12 @@
 <template>
 <body>        
     <div class="login-page">
+        <LoginPopup v-if="popupError" :closePopup="() => closePopup()"> 
+            <h2> Log in error: </h2>
+            <br>
+            An incorrect email/password was provided. Please make sure to type the correct user information.
+            <br>
+        </LoginPopup>   
         <div class="login-logo">
             <img id="kft-banner" src="./assets/KFTBanner.jpg" alt="">
         </div>
@@ -20,32 +26,45 @@
                 </div>
             </form>
         </div>
-    </div>    
+    </div>
 </body>
 </template>
 <script>
 import axios from 'axios'
+import { googleOneTap } from 'vue3-google-login'
+import { decodeCredential } from 'vue3-google-login'
+import LoginPopup from './components/LoginPopup.vue'
 
 const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 
 export default {
+    components: {
+        LoginPopup
+    },
     data() {
         return {
             callback:(response) => {
-                console.log("logged in");
-                console.log(response);
-                this.goToCustomer();
+                googleOneTap({ autoLigin: true })
+                .then((response) => {
+                    const userData = decodeCredential(response.credential)
+                    this.email = userData.email
+                    // Handling email from backend.
+                    handleGoogleOAuth();
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
             },
             email: '',
             pswd:  '',
+            popupError: false,
         }
     },
     methods: {
         async login() {
-            const query = apiRedirect + "/login/info/" + this.email + "/" + this.pswd;
-            console.log(query);
             try {
-                const response = await axios.get(query);
+                const login_query = apiRedirect + "/login/info/" + this.email + "/" + this.pswd;
+                const response = await axios.get(login_query);
                 const user_info = response.data[0];
                 
                 // Start routing to customer, cashier, and manager.
@@ -57,11 +76,37 @@ export default {
                     this.goToCustomer();   
                 }
             } catch (error) {
-                // TODO: Create wrong user info popup.
+                this.openPopup()
                 console.error(error);
             }
         },
-        goToCashier(empid) {
+        async handleGoogleOAuth() {
+            try {
+                const google_login_query = apiRedirect + "/login/info/" + this.email;
+                const response = await axios.get(google_login_query);
+                const user_info = response.data[0];
+                
+                // Start routing to customer, cashier, and manager.
+                if(user_info.title == "Cashier") {
+                    this.goToCashier();
+                } else if(user_info.title == "Manager") {
+                    this.goToManager();
+                } else if(user_info.title == "Customer") {
+                    this.goToCustomer();   
+                }
+            } catch (error) {
+                this.goToCashier();
+            }
+        },
+
+        openPopup() {
+            this.popupError = true;
+        },
+        closePopup() {
+            this.popupError = false;
+        },
+        
+        goToCashier() {
             // Navigate to the cashier interface page using Vue Router
             this.$router.push({
                 name: 'Cashier',
@@ -87,6 +132,14 @@ export default {
                     empid: JSON.stringify(empid),
                 }
             });
+        },
+        goToCustomer() {
+            this.$router.push('/customer');
+        },
+        goToManager() {
+            // TODO create rerouting to manager site.
+            console.log("Rerouting to manager side");
+            this.$router.push('/manager');
         },
     },
 }

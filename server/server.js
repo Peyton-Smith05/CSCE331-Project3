@@ -210,19 +210,51 @@ app.post('/submit-order', async (req, res) => {
   }
 });
 
-// ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
-app.get("/login/info/:email/:pswd", async (req, res) => {
+// This one uses google OAuth and the simple email to check what our data.
+app.get("/login/info/google/:email", async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\' AND password = \'" + req.params.pswd + "\'");
-    if (rows.length == 0) {
-      res.status(404).json('Could not find user');
-    }
-    else {
+    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
+    if(rows.length == 0) {
+      res.status(404).json('Could not find user with email ', req.params.email);
+    } else {
       res.json(rows);
     }
+
   } catch (err) {
     console.error(err.message);
-    res.status(404).json('Could not find user');
+    res.status(404).json('Could not find user with email ', req.params.email);
+  }
+})
+
+// ======= MANAGER API REQUESTS FOR INVENTORY INFORMATION ==========
+app.get("/manager/inventory", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM inventory");
+    res.json(rows);
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.get("/manager/employee", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM employee WHERE employee.title=\'Cashier\'");
+    res.json(rows);
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.get("/manager/inventory_requests", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM inventory_requests");
+    res.json(rows);
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
   }
 })
 
