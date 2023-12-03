@@ -61,6 +61,7 @@ export default {
   methods: {
     async submitOrder() {
       console.log("Submitting...");
+      // TODO: Fix time zone issue
       const now = new Date();
       const date = now.toISOString().split('T')[0];
       const time = now.toISOString().split('T')[1];

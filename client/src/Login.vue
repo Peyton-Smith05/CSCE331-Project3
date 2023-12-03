@@ -50,9 +50,9 @@ export default {
                 
                 // Start routing to customer, cashier, and manager.
                 if(user_info.title == "Cashier") {
-                    this.goToCashier();
+                    this.goToCashier(user_info.empid);
                 } else if(user_info.title == "Manager") {
-                    this.goToManager();
+                    this.goToManager(user_info.empid);
                 } else if(user_info.title == "Customer") {
                     this.goToCustomer();   
                 }
