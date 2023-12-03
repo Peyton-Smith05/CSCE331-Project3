@@ -18,7 +18,7 @@ app.use(history());       // Use since  SPA is not server side rendering.
                           // At least for the majority. So, when you access 
                           // /anything your web server won't redirect it to index.html. 
 
-const { Pool } = require('pg');
+const { Pool, DatabaseError } = require('pg');
 
 const pool = new Pool({
     user: process.env.PSQL_USER,
@@ -170,11 +170,68 @@ app.get('/menu-items/toppings', async (req, res) => {
   }
 });
 
-// ============= LOGIN PORTION to request passwords =============
-app.get('/user/credentials/:email/:pswd', async (req, res) => {
-  
-  console.log(pswd + " " + email);
-  res.json(email, pswd);
+// ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
+app.get("/login/info/:email/:pswd", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\' AND password = \'" + req.params.pswd + "\'");
+    if (rows.length == 0) {
+      res.status(404).json('Could not find user');
+    }
+    else {
+      res.json(rows);
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).json('Could not find user');
+  }
+})
+
+// This one uses google OAuth and the simple email to check what our data.
+app.get("/login/info/google/:email", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
+    if(rows.length == 0) {
+      res.status(404).json('Could not find user with email ', req.params.email);
+    } else {
+      res.json(rows);
+    }
+
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).json('Could not find user with email ', req.params.email);
+  }
+})
+
+// ======= MANAGER API REQUESTS FOR INVENTORY INFORMATION ==========
+app.get("/manager/inventory", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM inventory");
+    res.json(rows);
+  }
+  catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.get("/manager/employee", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM employee WHERE employee.title=\'Cashier\'");
+    res.json(rows);
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.get("/manager/inventory_requests", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM inventory_requests");
+    res.json(rows);
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
 })
 
 // Define the port
