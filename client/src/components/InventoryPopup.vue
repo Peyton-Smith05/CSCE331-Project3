@@ -2,7 +2,7 @@
     <div class="inv-popup">
         <div class="inv-inner">
             <slot />
-            <button class="popup-close" @click="closePopup()"> Add </button>
+            <button class="popup-close" @click="closePopup()"> Confirm </button>
         </div>
     </div>
 </template>

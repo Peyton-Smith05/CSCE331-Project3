@@ -63,17 +63,21 @@ export default {
     methods: {
         async login() {
             try {
-                const login_query = apiRedirect + "/login/info/" + this.email + "/" + this.pswd;
+                const login_query = apiRedirect + "/login/info/" + this.email;
                 const response = await axios.get(login_query);
                 const user_info = response.data[0];
                 
+                if(!user_info) {
+                    this.goToCustomer();
+                }
+
+                if(this.pswd !== user_info.password) {throw new Error("Invalid password")};
+
                 // Start routing to customer, cashier, and manager.
                 if(user_info.title == "Cashier") {
                     this.goToCashier();
                 } else if(user_info.title == "Manager") {
                     this.goToManager();
-                } else if(user_info.title == "Customer") {
-                    this.goToCustomer();   
                 }
             } catch (error) {
                 this.openPopup()
@@ -91,7 +95,7 @@ export default {
                     this.goToCashier();
                 } else if(user_info.title == "Manager") {
                     this.goToManager();
-                } else if(user_info.title == "Customer") {
+                } else {
                     this.goToCustomer();   
                 }
             } catch (error) {
@@ -111,7 +115,7 @@ export default {
             this.$router.push('/cashier');
         },
         goToCustomer() {
-            this.$router.push('/customer');
+            this.$router.push('/cashier');
         },
         goToManager() {
             // TODO create rerouting to manager site.

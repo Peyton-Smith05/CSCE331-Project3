@@ -16,8 +16,8 @@
     export default {
         data() {    
             return {
-                showInventory: true,
-                showSales: false
+                showInventory: false,
+                showSales: true
             }
         },
         components: {

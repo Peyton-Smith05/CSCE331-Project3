@@ -1,28 +1,50 @@
 <template>
-    <InventoryPopup v-if="showInventoryRequest" :closePopup=" () => onInventoryClose()">
+    <InventoryPopup v-if="addInvPopup" :closePopup=" () => handleNewInvReq()">
         <h2 style="font-weight: bolder;">Request a new Inventory</h2>
-        <div class="inv-name-input" style="display: flex;">
+        <div class="popup-entry" style="display: flex;">
             <label>Item Name:</label>
-            <input type="text" placeholder="straws">
+            <input type="text" v-model="reqItemName" placeholder="straws">
         </div>
-        <div class="inv-qty-input" style="display: flex;">
+        <div class="popup-entry" style="display: flex;">
             <label>Quantity:</label>
-            <input type="text" placeholder="1">
+            <input type="text" v-model="reqQuantity" placeholder="1">
         </div>
     </InventoryPopup>
-    <InventoryPopup v-if="showEmployeeAdd" :closePopup=" () => onEmployeeClose()">
+    <InventoryPopup v-if="addEmpPopup" :closePopup=" () => handleNewEmp()">
         <h2 style="font-weight: bolder;">Add a New Employee!</h2>
-        <div class="inv-name-input" style="display: flex;">
-            <label>Full Name:</label>
-            <input type="text" placeholder="Paul Taele">
+        <div class="popup-entry" style="display: flex;">
+            <label>First Name:</label>
+            <input type="text" v-model="empFname" placeholder="Paul">
         </div>
-        <div class="inv-qty-input" style="display: flex;">
+        <div class="popup-entry" style="display: flex;">
+            <label>Last Name:</label>
+            <input type="text" v-model="empLname" placeholder="Taele">
+        </div>
+        <div class="popup-entry" style="display: flex;">
             <label>Employee Title:</label>
-            <input type="text" placeholder="Cashier">
+            <input type="text" v-model="empTitle" placeholder="Cashier">
         </div>
-        <div class="inv-qty-input" style="display: flex;">
+        <div class="popup-entry" style="display: flex;">
             <label>Employee Email</label>
-            <input type="text" placeholder="name@example.com">
+            <input type="text" v-model="empEmail" placeholder="name@example.com">
+        </div>
+        <div class="popup-entry" style="display: flex;">
+            <label>Employee Password</label>
+            <input type="text" v-model="empPswd" placeholder="1234">
+        </div>
+    </InventoryPopup>
+    <InventoryPopup v-if="delInvPopup" :closePopup=" () => handleDelInvReq()">
+        <h2 style="font-weight: bolder;">Delete an Inventory Request</h2>
+        <div class="popup-entry" style="display: flex;">
+            <label>Request Id.</label>
+            <input type="text" v-model="reqId" placeholder="1234">
+        </div>
+    </InventoryPopup>
+    <InventoryPopup v-if="delEmpPopup" :closePopup=" () => handleDelEmp()">
+        <h2 style="font-weight: bolder;">Delete an Employee</h2>
+        <div class="popup-entry" style="display: flex;">
+            <label>Employee Id.</label>
+            <input type="text" v-model="empId" placeholder="1234">
         </div>
     </InventoryPopup>
 
@@ -53,47 +75,57 @@
         <div class="right-wrapper">
             <h3 id="request-title">Inventory Requests</h3>
             <div class="requests-wrapper">
-                <table class="inventory-requests-table">
-                    <tr class="req-header">
-                        <th id="req-id-header" style="font-weight: bolder;">Req. id.</th>
-                        <th id="req-name-header" style="font-weight: bolder;">Item name</th>
-                        <th id="req-qty-header" style="font-weight: bolder;">Quantity</th>
-                    </tr>
-                    <tr class="request-element" v-for="requestItem in invRequestsResponse" :key="requestItem.request_id">
-                        <th id="request-id">
-                            {{ requestItem.request_id }}
-                        </th>
-                        <th id="request-item-name">
-                            {{ requestItem.item_name }}
-                        </th>
-                        <th id="request-quantity">
-                            {{ requestItem.quantity }}
-                        </th>
-                    </tr>
-                </table>
-                <button @click="onInventoryOpen()" class="add-btn">Add Request</button>
+                <div class="table-wrapper">
+                    <table class="inventory-requests-table">
+                        <tr class="req-header">
+                            <th id="req-id-header" style="font-weight: bolder;">Request Id.</th>
+                            <th id="req-name-header" style="font-weight: bolder;">Item name</th>
+                            <th id="req-qty-header" style="font-weight: bolder;">Quantity</th>
+                        </tr>
+                        <tr class="request-element" v-for="requestItem in invRequestsResponse" :key="requestItem.request_id">
+                            <th id="request-id">
+                                {{ requestItem.request_id }}
+                            </th>
+                            <th id="request-item-name">
+                                {{ requestItem.item_name }}
+                            </th>
+                            <th id="request-quantity">
+                                {{ requestItem.quantity }}
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+                <button @click="AddInvRequest()" class="add-btn">Add Request</button>
+                <button @click="DeleteInvRequest()" class="add-btn">Delete Request</button>
             </div>
             <h3 id="employee-table-title">Employees</h3>
             <div class="employee-wrapper">
-                <table class="employee-table">
-                    <tr class="emp-header">
-                        <th id="emp-name-header" style="font-weight: bolder;"> Full Name</th>
-                        <th id="emp-title-header" style="font-weight: bolder;"> Title </th>
-                        <th id="emp-email-header" style="font-weight: bolder;">Email</th>
-                    </tr>
-                    <tr class="employee-element" v-for="employeeItem in employeeRespone" :key="employeeItem.empid">
-                        <th id="employee-name">
-                            {{ employeeItem.fname }} {{ employeeItem.lname }}
-                        </th>
-                        <th id="employee-title">
-                            {{ employeeItem.title }}
-                        </th>
-                        <th id="employee-email">
-                            {{ employeeItem.email }}
-                        </th>
-                    </tr>
-                </table>
-                <button @click="onEmployeeOpen()" class="add-btn">Add Employee</button>
+                <div class="table-wrapper">
+                    <table class="employee-table">
+                        <tr class="emp-header">
+                            <th id="emp-id-header" style="font-weight: bolder;"> Employee Id</th>
+                            <th id="emp-name-header" style="font-weight: bolder;"> Full Name</th>
+                            <th id="emp-title-header" style="font-weight: bolder;"> Title </th>
+                            <th id="emp-email-header" style="font-weight: bolder;">Email</th>
+                        </tr>
+                        <tr class="employee-element" v-for="employeeItem in employeeRespone" :key="employeeItem.empid">
+                            <th id="employee-id">
+                                {{ employeeItem.empid }}
+                            </th>
+                            <th id="employee-name">
+                                {{ employeeItem.fname }} {{ employeeItem.lname }}
+                            </th>
+                            <th id="employee-title">
+                                {{ employeeItem.title }}
+                            </th>
+                            <th id="employee-email">
+                                {{ employeeItem.email }}
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+                <button @click="addEmployee()" class="add-btn">Add Employee</button>
+                <button @click="delEmployee()" class="add-btn">Delete Employee</button>
             </div>
         </div>
 </template>
@@ -115,8 +147,36 @@
                 invRequestsResponse: [],
                 employeeRespone: [],
 
-                showInventoryRequest: false,
-                showEmployeeAdd: false,
+                addInvPopup: false,
+                delInvPopup: false,
+                addEmpPopup: false,
+                delEmpPopup: false,
+
+                // Placeholder variables for employees
+                empId: '',
+                empFname: '',
+                empLname: '',
+                empTitle: '',
+                empEmail: '',
+                empPswd: '',
+                employeeTemplate: {
+                    empid: 0,
+                    fname: '',
+                    lname: '',
+                    title: '',
+                    email: '',
+                    password: '',
+                },
+
+                // Placeholder variables for inventory request.
+                reqItemName: '',
+                reqQuantity: '',
+                reqId: '',
+                invRequestTemplate: {
+                    item_name: '',
+                    quantity: 0,
+                    request_id: 0,
+                },
             }
         },
         created() {
@@ -150,23 +210,78 @@
                 try {
                     const response = await axios.get(employee_request);
                     this.employeeRespone = response.data;
-                    console.log(this.employeeRespone)
                 } catch(err) {
                     console.error(err);
                     this.err = 'Failed to load employees';
                 }
             },
 
-            onInventoryOpen() { this.showInventoryRequest = !this.showInventoryRequest },
-            
-            onInventoryClose() {
-                this.showInventoryRequest = !this.showInventoryRequest
+            AddInvRequest() { this.addInvPopup = !this.addInvPopup },
+            DeleteInvRequest() {this.delInvPopup = !this.delInvPopup},
+
+            async handleNewInvReq() {
+                const requestPostAPI = apiRedirect + "/manager/api/new-request"
+                try {
+                    // Creating data for API POST request.
+                    this.invRequestTemplate.item_name = this.reqItemName;
+                    this.invRequestTemplate.quantity = this.reqQuantity;
+                    const response = await axios.post(requestPostAPI, this.invRequestTemplate);
+                    
+                    
+                } catch(err) {
+                    console.error(err);
+                    err = "Could not insert new employee.";
+                }
+                this.addInvPopup = !this.addInvPopup
             },
 
-            onEmployeeOpen() { this.showEmployeeAdd = !this.showEmployeeAdd },
+            async handleDelInvReq() {
+                const deletePostQuery = apiRedirect + "/manager/api/delete-request";
+                try {
+                    // Creating data for API POST request
+                    this.invRequestTemplate.request_id = this.reqId;
+                    const response = await axios.post(deletePostQuery, this.invRequestTemplate)
 
-            onEmployeeClose() {
-                this.showEmployeeAdd = !this.showEmployeeAdd
+                } catch(err) {
+                    console.error(err);
+                    err = "Could not insert new employee.";
+                }
+                this.delInvPopup = !this.delInvPopup;
+            },
+
+            addEmployee() { this.addEmpPopup = !this.addEmpPopup },
+
+            delEmployee() { this.delEmpPopup = !this.delEmpPopup},
+
+            async handleNewEmp() {
+                const addEmpAPI = apiRedirect + "/manager/api/new-employee"
+                try {
+                    // Creating data template to pass API POST request.
+                    this.employeeTemplate.fname = this.empFname;
+                    this.employeeTemplate.lname = this.empLname;
+                    this.employeeTemplate.title = this.empTitle;
+                    this.employeeTemplate.email = this.empEmail;
+                    this.employeeTemplate.password = this.empPswd;
+                    
+                    const response = await axios.post(addEmpAPI, this.employeeTemplate);
+
+                } catch(err) {
+                    console.error(err);
+                    err = "Could not insert new employee.";
+                }
+                this.addEmpPopup = !this.addEmpPopup
+            },
+
+            async handleDelEmp() {
+                const delEmpAPI = apiRedirect + "/manager/api/delete-employee";
+                try {
+                    this.employeeTemplate.empid = this.empId;
+                    const response = await axios.post(delEmpAPI, this.employeeTemplate);
+                } catch(err) {
+                    console.error(err);
+                    err = "Could not insert new employee.";
+                }
+                this.delEmpPopup = !this.delEmpPopup
             }
 
         },
@@ -192,7 +307,7 @@
         left: 10vw;
         max-height: 65vh;
         max-width: 50vw;
-        overflow-y: auto;
+        overflow-y: scroll;
     }
 
     #inventory-id, #inventory-quantity, #inv-id-header, #inv-quantity-header {
@@ -225,6 +340,9 @@
         left: 20vw;
         max-height: 30vh;
         max-width: 30vw;
+    }
+
+    .table-wrapper{
         overflow-y: auto;
     }
 
@@ -253,17 +371,18 @@
         top: 40vh;
         left: 20vw;
         max-height: 30vh;
+        max-width: 30vw;
         overflow-y: auto;
     }
     
     #employee-name, #employee-email, #emp-name-header, #emp-email-header {
-        width: 35%;
+        width: 25%;
         padding: 5px;
         background: rgb(238, 237, 237);
     }
 
-    #employee-title, #emp-title-header {
-        width:30%;
+    #employee-title, #emp-title-header, #employee-id, #emp-id-header {
+        width:25%;
         padding: 5px;
         background: lightgray;
     }
@@ -280,11 +399,11 @@
         cursor: pointer;
     }
 
-    .inv-name-input, .inv-qty-input {
+    .popup-entry {
         padding: 10px;
     }
 
-    .inv-name-input label, .inv-qty-input label {
+    .popup-entry label {
         width:180px;
         clear:left;
         text-align:left;

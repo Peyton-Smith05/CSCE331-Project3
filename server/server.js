@@ -171,15 +171,11 @@ app.get('/menu-items/toppings', async (req, res) => {
 });
 
 // ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
-app.get("/login/info/:email/:pswd", async (req, res) => {
+app.get("/login/info/:email", async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\' AND password = \'" + req.params.pswd + "\'");
-    if (rows.length == 0) {
-      res.status(404).json('Could not find user');
-    }
-    else {
-      res.json(rows);
-    }
+    console.log("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'")
+    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
+    res.json(rows);
   } catch (err) {
     console.error(err.message);
     res.status(404).json('Could not find user');
@@ -189,7 +185,6 @@ app.get("/login/info/:email/:pswd", async (req, res) => {
 // This one uses google OAuth and the simple email to check what our data.
 app.get("/login/info/google/:email", async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
     if(rows.length == 0) {
       res.status(404).json('Could not find user with email ', req.params.email);
     } else {
@@ -216,8 +211,69 @@ app.get("/manager/inventory", async (req, res) => {
 
 app.get("/manager/employee", async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM employee WHERE employee.title=\'Cashier\'");
+    const { rows } = await pool.query("SELECT * FROM employee WHERE employee.title!=\'Manager\'");
     res.json(rows);
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.post("/manager/api/new-request", async (req, res) => {
+  const { item_name, quantity, request_id } = req.body;
+  const reqIdQuery = "SELECT request_id FROM inventory_requests ORDER BY request_id DESC LIMIT 1;"
+  const insertReqQuery = "INSERT INTO inventory_requests (item_name, quantity, request_id) VALUES($1, $2, $3)"
+  try {
+    // Get new request_id from db.
+    let ReqIdResponse = await pool.query(ReqIdQuery);
+    // Variable contains the new, unique requestid.
+    let newReqId = ReqIdResponse.rows[0].request_id + 1;
+    
+    await pool.query(insertReqQuery, [item_name, quantity, newReqId]);
+    res.status(201).send("Inventory Request added succesfully");
+    
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.post("/manager/api/delete-request", async(req, res) => {
+  const {item_name, quantity, request_id} = req.body;
+  const deleteReqQuery = "DELETE FROM inventory_requests WHERE request_id=" + request_id;
+  try {
+    await pool.query(deleteReqQuery);
+    res.status(201).send("Inventory request deleted succesfully");
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.post("/manager/api/new-employee", async(req, res) => {
+  const {empid, fname, lname, title, email, password} = req.body; 
+  const empIdQuery = "SELECT empid FROM employee ORDER BY empid DESC LIMIT 1;";
+  const insertEmpQuery = "INSERT INTO employee (empid, fname, lname, title, email, password) VALUES($1, $2, $3, $4, $5, $6)"
+  try {
+    // Get new empid from db.
+    let empIdResponse = await pool.query(empIdQuery);
+    let newEmpId = empIdResponse.rows[0].empid + 1000;
+    await pool.query(
+      insertEmpQuery,
+      [newEmpId, fname, lname, title, email, password]);
+    res.status(201).send("Employee addes successfully");
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.post("/manager/api/delete-employee", async(req, res) => {
+  const {empid, fname, lname, title, email, password} = req.body; 
+  const deleteEmpQuery = "DELETE FROM employee WHERE empid=" + empid;
+  try {
+    await pool.query(deleteEmpQuery);
+    res.status(201).send("Inventory request deleted succesfully");
   } catch(err) {
     console.error(err.message);
     res.status(500).json('Server Error');
