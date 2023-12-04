@@ -10,6 +10,8 @@ import Carousel from './Carousel.vue';
 
 import Login from './Login.vue';
 
+import Menu from './Menu.vue';
+
 const routes = [
   {
     path: '/',
@@ -43,6 +45,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
+  },
+  {
+    path: '/menu',
+    name: 'Menu',
+    component: Menu,
   },
   // Add more routes for other pages if needed
 ];

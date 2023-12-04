@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const app = express();
 const path = __dirname + "/../client/dist/";
+const category = "what's-new";
+const encodedCategory = encodeURIComponent(category);
 
 history({
   index: 'index.htmp'
@@ -65,6 +67,34 @@ app.get('/menu-items/classic', async (req, res) => {
 app.get('/menu-items/espresso', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'espresso\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+app.get('/menu-items/:category', async (req, res) => {
+  let { category } = req.params;
+  category = decodeURIComponent(category); // Decode the URI component
+  try {
+    const queryText = 'SELECT * FROM menu WHERE category = $1';
+    const { rows } = await pool.query(queryText, [category]);
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+
+
+
+//console.log('/menu-items/' + category);
+app.get('/menu-items/what\'s-new', async (req, res) => {
+  try {
+    const queryText = 'SELECT * FROM menu WHERE category = $1';
+    const { rows } = await pool.query(queryText, [category]);
     res.json(rows);
   } catch (err) {
     console.error(err.message);

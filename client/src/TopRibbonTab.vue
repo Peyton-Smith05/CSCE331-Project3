@@ -3,6 +3,9 @@
       <router-link to="/login">
         <button @click="goToLoginInterface()">Go to Cashier</button>
       </router-link>
+      <router-link to="/menu">
+        <button @click="goToMenu()">View</button>
+      </router-link>
     </div>
   </template>
   
@@ -11,6 +14,9 @@
     methods: {
       goToLoginInterface() {
         this.$router.push('/login');
+      },
+      goToMenu() {
+        this.$router.push('/menu');
       },
       goToCashierInterface() {
         // Navigate to the cashier interface page using Vue Router
