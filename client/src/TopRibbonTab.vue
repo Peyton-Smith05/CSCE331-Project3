@@ -13,12 +13,6 @@
       <router-link to="/login">
         <button @click="goToLoginInterface()">Go Back</button>
       </router-link>
-      <router-link to="">
-        <button>See Inventory</button>
-      </router-link>
-      <router-link to="">
-        <button>See Sales</button>
-      </router-link>
     </nav>
     
     <img id='KFTLogo' src="./assets/Kung_Fu_Tea_Official_Logo.png" alt="" @click="goToLanding()">
@@ -45,7 +39,7 @@
   
   <style scoped>
   .top-ribbon-tab {
-    background-color: rgba(204, 204, 204, 1);;
+    background-color: rgba(204, 204, 204, 1);
     padding: 10px;
     z-index: 6;
     width: 100vw;

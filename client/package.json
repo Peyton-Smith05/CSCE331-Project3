@@ -8,10 +8,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@syncfusion/ej2-vue-calendars": "^23.2.6",
     "axios": "^1.6.0",
+    "chart.js": "^4.4.0",
     "dist": "^0.1.2",
     "scss": "^0.2.4",
     "vue": "^3.3.4",
+    "vue-chartjs": "^5.2.0",
     "vue-cli": "^2.9.6",
     "vue-router": "^4.2.5",
     "vue3-google-login": "^2.0.25",

@@ -234,6 +234,25 @@ app.get("/manager/inventory_requests", async (req, res) => {
   }
 })
 
+app.get("/manager/sales-report-day/:start_date/:end_date", async(req, res) => {
+  
+  try{
+    console.log("Checking validity of dates.")
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.get("/manager/sales-report-hour/:start_date_time/:end_date_time", async(req, res) => {
+  try{
+
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
 // Define the port
 const PORT = 3000;
 

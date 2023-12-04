@@ -29,6 +29,10 @@ export default {
         background: white;
         padding: 32px;
     }
+    .popup-inner button {
+        position: relative;
+        left: 40%;
+    }
 }
 
 </style>
