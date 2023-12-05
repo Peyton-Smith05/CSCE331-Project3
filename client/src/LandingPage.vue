@@ -8,7 +8,7 @@
   
   <script>
   import Header from './LandingHeader.vue'
-  import MainContent from './Carousel.vue'
+  import MainContent from './LandingContent.vue'
   import Footer from './LandingFooter.vue'
   
   export default {

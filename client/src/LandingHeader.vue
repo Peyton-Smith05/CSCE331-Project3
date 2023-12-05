@@ -2,14 +2,25 @@
   <div class="landing-header">
     <header>
       <img src="./assets/Kung_Fu_Tea_Official_Logo.png" alt="Boba Tea Shop Logo" class="logo" />
-      <button>Login</button>
+      <div class="buttons">
+        <button @click="goToMenu">View Menu</button>
+        <button @click="goToLogin">Login</button>
+      </div>
     </header>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Header'
+  name: 'Header',
+  methods: {
+    goToLogin() {
+      this.$router.push('/login');
+    },
+    goToMenu() {
+      this.$router.push('/menu');
+    },
+  }
 }
 </script>
 
@@ -25,7 +36,7 @@ export default {
   position: fixed; /* Add position: fixed to ensure it stays at the top */
   top: 0; /* Position it at the top of the viewport */
   left: 0;
-  z-index: 1;
+  padding-right: 10px;
 }
 
 header {
@@ -33,13 +44,27 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* padding: 1rem;  */
 }
 
 .logo {
   width: auto; /* Adjust if necessary */
   height: 100%; /* Use 100% of the header height */
   max-height: 75px; /* Set a maximum height */
+}
+
+.landing button {
+    background-color: #fff;
+    color: #000;
+    border: none;
+    padding: 10px 10px;
+    cursor: pointer;
+}
+
+.buttons {
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 </style>
 

@@ -5,7 +5,6 @@ import CustomerToppings from './CustomerToppings.vue';
 import CashierToppings from './CashierToppings.vue';
 import CashierMenuItems from './CashierMenuItems.vue';
 import CustomerMenuItems from './CustomerMenuItems.vue';
-import Carousel from './Carousel.vue';
 import Login from './Login.vue';
 import Checkout from './Checkout.vue';
 import Manager from './Manager.vue';
