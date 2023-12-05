@@ -1,5 +1,5 @@
 <template>
-    <div id="landing">
+    <div class="landing">
       <Header/>
       <MainContent/>
       <Footer/>
@@ -22,33 +22,19 @@
   </script>
   
 <style>
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100vh;
-}
-
-#landing {
-  display: flex;
-  flex-direction: column;
+.landing {
+  background-image: url('./assets/background.png');
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
   height: 100vh;
-  width: 100vh;
-  margin: 0; 
+  display: flex;           /* Enable flexbox */
+  flex-direction: column;  /* Stack children vertically */
+  justify-content: center; /* Center children horizontally in the container */
+  align-items: center;     /* Center children vertically in the container */
 }
 
-/* Make sure to target the correct element or class for MainContent */
-.main-content {
-  flex-grow: 1; /* Grow to take available space */
-  /* Make sure your background image covers the entire content area */
-  background-size: cover; /* Cover the entire area */
-  background-position: center; /* Center the background */
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Center content vertically */
-  align-items: center; /* Center content horizontally */
-  width:100%;
-}
 </style>
 
   

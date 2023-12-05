@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <h1>KUNG FU TEA</h1>
-    <p></p>
+    <p>Hello World</p>
     <!-- Add more content as needed -->
   </div>
 </template>
@@ -14,7 +14,6 @@ export default {
 
 <style scoped>
 .main-content {
-  width: 100%;
-  background-image: url('./assets/background.png');
+  width: 50vw;
 }
 </style>

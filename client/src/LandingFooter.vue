@@ -29,8 +29,12 @@ export default {
 
 <style scoped>
 footer {
-  width: 100%;
-  padding: 1rem; /* Add some padding */
-  text-align: center; /* Center the text */
+  position: fixed; 
+  bottom: 0; 
+  left: 0;
+  width: 100vw;
+  padding: 1rem; 
+  text-align: center; 
+  background-color: rgba(235,12,67,255);
 }
 </style>
