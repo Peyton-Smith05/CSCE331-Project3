@@ -10,6 +10,8 @@ import Checkout from './Checkout.vue';
 import Manager from './Manager.vue';
 import LandingPage from './LandingPage.vue';
 
+import Menu from './Menu.vue';
+
 const routes = [
   {
     path: '/',
@@ -67,7 +69,12 @@ const routes = [
     name: 'Login',
     component: Login,
   },
-
+  {
+    path: '/menu',
+    name: 'Menu',
+    component: Menu,
+  },
+  // Add more routes for other pages if needed
   {
     path: '/checkout',
     name: 'Checkout',

@@ -55,6 +55,7 @@ export default {
                     console.error(error);
                 })
             },
+            empid: 0,
             email: '',
             pswd:  '',
             popupError: false,
@@ -66,9 +67,12 @@ export default {
                 const login_query = apiRedirect + "/login/info/" + this.email + "/" + this.pswd;
                 const response = await axios.get(login_query);
                 const user_info = response.data[0];
+
+                console.log(user_info);
                 
                 // Start routing to customer, cashier, and manager.
                 if(user_info.title == "Cashier") {
+                    this.empid = user_info.empid;
                     this.goToCashier(user_info.empid);
                 } else if(user_info.title == "Manager") {
                     this.goToManager(user_info.empid);
@@ -111,7 +115,7 @@ export default {
             this.$router.push({
                 name: 'Cashier',
                 query: {
-                    empid: JSON.stringify(empid),
+                    empid: JSON.stringify(this.empid),
                 }
             });
         },

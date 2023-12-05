@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const app = express();
 const path = __dirname + "/../client/dist/";
+const category = "what's-new";
+const encodedCategory = encodeURIComponent(category);
 
 history({
   index: 'index.htmp'
@@ -56,6 +58,18 @@ app.get('/menu-items/classic', async (req, res) => {
 app.get('/menu-items/espresso', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'espresso\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+//console.log('/menu-items/' + category);
+app.get('/menu-items/what\'s-new', async (req, res) => {
+  try {
+    const queryText = 'SELECT * FROM menu WHERE category = $1';
+    const { rows } = await pool.query(queryText, [category]);
     res.json(rows);
   } catch (err) {
     console.error(err.message);
@@ -131,10 +145,14 @@ app.get('/menu-items/milk-strike', async (req, res) => {
 
 // API endpoint to get menu categories
 app.get('/menu-items/category', async (req, res) => {
+  console.log("Happening");
   try {
+    console.log("Category Request");
     const { rows } = await pool.query('SELECT DISTINCT category FROM menu');
     res.json(rows);
+    console.log("Finished Category Request");
   } catch (err) {
+    console.log("Error");
     console.error(err.message);
     res.status(500).json('Server error');
   }
@@ -210,6 +228,22 @@ app.post('/submit-order', async (req, res) => {
   }
 });
 
+// ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
+app.get("/login/info/:email/:pswd", async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\' AND password = \'" + req.params.pswd + "\'");
+    if (rows.length == 0) {
+      res.status(404).json('Could not find user');
+    }
+    else {
+      res.json(rows);
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(404).json('Could not find user');
+  }
+})
+
 // This one uses google OAuth and the simple email to check what our data.
 app.get("/login/info/google/:email", async (req, res) => {
   try {
@@ -227,6 +261,7 @@ app.get("/login/info/google/:email", async (req, res) => {
 })
 
 // ======= MANAGER API REQUESTS FOR INVENTORY INFORMATION ==========
+
 app.get("/manager/inventory", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM inventory");
