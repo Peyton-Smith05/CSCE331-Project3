@@ -7,11 +7,9 @@
 
 <script>
 import TopRibbonTab from './TopRibbonTab.vue';
-
-
 export default {
   components: {
-    TopRibbonTab
+    TopRibbonTab,
   },
 };
 </script>
