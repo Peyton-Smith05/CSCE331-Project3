@@ -5,10 +5,10 @@ import CustomerToppings from './CustomerToppings.vue';
 import CashierToppings from './CashierToppings.vue';
 import CashierMenuItems from './CashierMenuItems.vue';
 import CustomerMenuItems from './CustomerMenuItems.vue';
-import Carousel from './Carousel.vue';
 import Login from './Login.vue';
 import Checkout from './Checkout.vue';
 import Manager from './Manager.vue';
+import LandingPage from './LandingPage.vue';
 
 import Menu from './Menu.vue';
 
@@ -16,7 +16,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Carousel, 
+    component: LandingPage, 
   },
   {
     path: '/cashier',
@@ -74,7 +74,6 @@ const routes = [
     name: 'Menu',
     component: Menu,
   },
-  // Add more routes for other pages if needed
   {
     path: '/checkout',
     name: 'Checkout',
