@@ -74,22 +74,6 @@ app.get('/menu-items/espresso', async (req, res) => {
   }
 });
 
-app.get('/menu-items/:category', async (req, res) => {
-  let { category } = req.params;
-  category = decodeURIComponent(category); // Decode the URI component
-  try {
-    const queryText = 'SELECT * FROM menu WHERE category = $1';
-    const { rows } = await pool.query(queryText, [category]);
-    res.json(rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json('Server error');
-  }
-});
-
-
-
-
 //console.log('/menu-items/' + category);
 app.get('/menu-items/what\'s-new', async (req, res) => {
   try {
@@ -170,10 +154,14 @@ app.get('/menu-items/milk-strike', async (req, res) => {
 
 // API endpoint to get menu categories
 app.get('/menu-items/category', async (req, res) => {
+  console.log("Happening");
   try {
+    console.log("Category Request");
     const { rows } = await pool.query('SELECT DISTINCT category FROM menu');
     res.json(rows);
+    console.log("Finished Category Request");
   } catch (err) {
+    console.log("Error");
     console.error(err.message);
     res.status(500).json('Server error');
   }
