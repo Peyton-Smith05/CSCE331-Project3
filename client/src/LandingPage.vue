@@ -29,10 +29,10 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  display: flex;           /* Enable flexbox */
-  flex-direction: column;  /* Stack children vertically */
-  justify-content: center; /* Center children horizontally in the container */
-  align-items: center;     /* Center children vertically in the container */
+  display: flex;
+  flex-direction: column;  
+  justify-content: center; 
+  align-items: center;     
 }
 
 </style>

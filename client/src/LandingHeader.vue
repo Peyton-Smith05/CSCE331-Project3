@@ -32,9 +32,9 @@ export default {
   z-index: 6;
   width: 100vw;
   height: 10vh;
-  margin: 0; /* Remove any default margin */
-  position: fixed; /* Add position: fixed to ensure it stays at the top */
-  top: 0; /* Position it at the top of the viewport */
+  margin: 0;
+  position: fixed; 
+  top: 0; 
   left: 0;
   padding-right: 10px;
 }
@@ -47,9 +47,9 @@ header {
 }
 
 .logo {
-  width: auto; /* Adjust if necessary */
-  height: 100%; /* Use 100% of the header height */
-  max-height: 75px; /* Set a maximum height */
+  width: auto;
+  height: 100%; 
+  max-height: 75px;
 }
 
 .landing button {

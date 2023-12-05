@@ -21,11 +21,8 @@ export default {
   },
   methods: {
     async getWeather() {
-      console.log(this.location);
       const request = 'https://api.openweathermap.org/data/2.5/weather?q=' + this.location + '&appid=cb79dd33fa3e6a684d5325a7c31b1e4b&units=imperial';
-      // Replace with actual API call and handle user location
       const response = await axios.get(request);
-      console.log(response.data);
       this.weatherInfo = response.data;
     }
   }
@@ -46,13 +43,23 @@ footer {
 .weather-input {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.weather-input p{
+  color: black;
+  background-color: #fff;
+  border-radius: 2px;
+  padding: 5px;
+  margin-left: auto; 
+  min-width: 20%; 
 }
 
 .rounded-textbox {
   border: 1px solid #ccc;
-  border-radius: 15px; /* Rounded corners */
+  border-radius: 15px; 
   padding: 10px 15px;
-  margin-right: 10px; /* Spacing between textbox and button */
+  margin-right: 10px;
 }
 
 .weather-button {
@@ -62,6 +69,7 @@ footer {
   border-radius: 5px;
   padding: 10px 20px;
   cursor: pointer;
+  margin-right: auto;
 }
 
 .weather-button:hover {

@@ -74,7 +74,6 @@ const routes = [
     name: 'Menu',
     component: Menu,
   },
-  // Add more routes for other pages if needed
   {
     path: '/checkout',
     name: 'Checkout',
