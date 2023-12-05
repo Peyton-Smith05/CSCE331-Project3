@@ -9,12 +9,13 @@ import Carousel from './Carousel.vue';
 import Login from './Login.vue';
 import Checkout from './Checkout.vue';
 import Manager from './Manager.vue';
+import LandingPage from './LandingPage.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Carousel, 
+    component: LandingPage, 
   },
   {
     path: '/cashier',
