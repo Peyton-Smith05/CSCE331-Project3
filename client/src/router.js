@@ -1,14 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
-
 import Cashier from './Cashier.vue';
-
-import Toppings from './Toppings.vue';
-
-import MenuItems from './Menu-Items.vue';
-
+import Customer from './Customer.vue';
+import CustomerToppings from './CustomerToppings.vue';
+import CashierToppings from './CashierToppings.vue';
+import CashierMenuItems from './CashierMenuItems.vue';
+import CustomerMenuItems from './CustomerMenuItems.vue';
 import Carousel from './Carousel.vue';
-
 import Login from './Login.vue';
+import Checkout from './Checkout.vue';
+import Manager from './Manager.vue';
 
 import Menu from './Menu.vue';
 
@@ -16,7 +16,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Carousel, // Redirect the root path to the cashier interface
+    component: Carousel, 
   },
   {
     path: '/cashier',
@@ -24,19 +24,42 @@ const routes = [
     component: Cashier,
     children: [
       {
-        path: '', // Empty path for the child route
-        redirect: '/menuitems' // Redirects '/parent' to '/parent/defaultChildRoute'
+        path: '', 
+        redirect: '/cashiermenuitems' 
       },
       {
-        path: '/menuitems', // Nested route for MenuItems
-        name: 'MenuItems',
-        component: MenuItems,
+        path: '/cashiermenuitems', 
+        name: 'CashierMenuItems',
+        component: CashierMenuItems,
         props: (route) => ({ propName: route.query.filteredMenuItems })
       },
       {
-        path: '/toppings', // Nested route for Toppings (if needed)
-        name: 'Toppings',
-        component: Toppings,
+        path: '/cashiertoppings', 
+        name: 'CashierToppings',
+        component: CashierToppings,
+        props: true,
+      },
+    ],
+  },
+  {
+    path: '/customer',
+    name: 'Customer',
+    component: Customer,
+    children: [
+      {
+        path: '', 
+        redirect: '/customermenuitems' 
+      },
+      {
+        path: '/customermenuitems', 
+        name: 'CustomerMenuItems',
+        component: CustomerMenuItems,
+        props: (route) => ({ propName: route.query.filteredMenuItems })
+      },
+      {
+        path: '/customertoppings', 
+        name: 'CustomerToppings',
+        component: CustomerToppings,
         props: true,
       },
     ],
@@ -52,6 +75,16 @@ const routes = [
     component: Menu,
   },
   // Add more routes for other pages if needed
+  {
+    path: '/checkout',
+    name: 'Checkout',
+    component: Checkout,
+  },
+  {
+    path: '/manager',
+    name: "Manager",
+    component: Manager,
+  },
 ];
 
 const router = createRouter({
