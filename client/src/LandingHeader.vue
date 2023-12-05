@@ -1,8 +1,10 @@
 <template>
-  <header>
-    <img src="./assets/Kung_Fu_Tea_Official_Logo.png" alt="Boba Tea Shop Logo" class="logo" />
-    <button>Login</button>
-  </header>
+  <div class="landing-header">
+    <header>
+      <img src="./assets/Kung_Fu_Tea_Official_Logo.png" alt="Boba Tea Shop Logo" class="logo" />
+      <button>Login</button>
+    </header>
+  </div>
 </template>
 
 <script>
@@ -12,7 +14,10 @@ export default {
 </script>
 
 <style scoped>
-/* LandingHeader.vue */
+
+.landing-header {
+  
+}
 header {
   width: 100%;
   display: flex;
