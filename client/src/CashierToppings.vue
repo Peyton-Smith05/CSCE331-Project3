@@ -2,30 +2,30 @@
     <div class="topping-interface">
       <div class="exit-button" @click="closeToppingInterface">X</div>
       <div class="topping-options">
-        <h2>{{options[0]}}</h2>
+        <h2>Select Toppings</h2>
   
         <!-- Size Category -->
         <div class="topping-category">
-          <h3>{{options[1]}}</h3>
-          <div v-for="(option, index) in sizeOptions" :key="option">
+          <h3>Size</h3>
+          <div v-for="option in sizeOptions" :key="option">
             <input type="radio" :id="option" :value="option" v-model="selectedSize">
-            <label :for="option">{{ optionDetails[index] }}</label>
+            <label :for="option">{{ option }}</label>
           </div>
         </div>
   
         <!-- Temperature Category -->
         <div class="topping-category">
-          <h3>{{options[2]}}</h3>
-          <div v-for="(option, index) in temperatureOptions" :key="option">
+          <h3>Temperature</h3>
+          <div v-for="option in temperatureOptions" :key="option">
             <input type="radio" :id="option" :value="option" v-model="selectedTemperature">
-            <label :for="option">{{ optionDetails[index+2] }}</label>
+            <label :for="option">{{ option }}</label>
           </div>
         </div>
   
         <!-- Sugar Level Category -->
         <div class="topping-category">
-          <h3>{{options[3]}}</h3>
-          <div v-for="(option, index) in sugarLevelOptions" :key="option">
+          <h3>Sugar Level</h3>
+          <div v-for="option in sugarLevelOptions" :key="option">
             <input type="radio" :id="option" :value="option" v-model="selectedSugarLevel">
             <label :for="option">{{ option }}</label>
           </div>
@@ -33,16 +33,16 @@
   
         <!-- Ice Level Category -->
         <div class="topping-category">
-          <h3>{{options[4]}}</h3>
-          <div v-for="(option, index) in iceLevelOptions" :key="option">
+          <h3>Ice Level</h3>
+          <div v-for="option in iceLevelOptions" :key="option">
             <input type="radio" :id="option" :value="option" v-model="selectedIceLevel">
-            <label :for="option">{{ optionDetails[index+4] }}</label>
+            <label :for="option">{{ option }}</label>
           </div>
         </div>
   
         <!-- Toppings Category -->
         <div class="topping-category">
-          <h3>{{options[5]}}</h3>
+          <h3>Toppings</h3>
           <div v-for="option in toppingsOptions" :key="option.id">
             <input type="checkbox" :id="option.id" :value="option" v-model="selectedToppings">
             <label :for="option">{{ option.name }} - ${{ option.price }}</label>
@@ -50,7 +50,7 @@
         </div>
   
       </div>
-      <button class="done-button" @click="submitOrder">{{options[6]}}</button>
+      <button class="done-button" @click="submitOrder">Done</button>
     </div>
   </template>
   
@@ -74,16 +74,6 @@
         respond: [],
       };
     },
-    props: {
-      options: {
-        type: Array,
-        default: () => ["Order Details", "Size", "Temperature", "Sugar Level", "Ice Level", "Toppings", "Done"]
-      },
-      optionDetails: {
-        type: Array,
-        default: () => ['Medium', 'Large', 'Hot', 'Cold', 'None', 'Less', 'Regular'],
-      },
-    },
     created(){
       const toppings_api = apiRedirect + "/menu-items/topping";
       
@@ -102,11 +92,11 @@
       },
       closeToppingInterface() {
         // Handle closing of the topping interface
-        this.$router.push({ name: 'MenuItems', params: {} });
+        this.$router.push({ name: 'CashierMenuItems', params: {} });
       },
       submitOrder() {
         this.$emit('sendOrder', this.selectedSize, this.selectedTemperature, this.selectedSugarLevel, this.selectedIceLevel, this.selectedToppings);
-        this.$router.push({ name: 'MenuItems', params: {} });
+        this.$router.push({ name: 'CashierMenuItems', params: {} });
       },
       // Add methods to handle selection and processing of toppings
     },
@@ -124,84 +114,40 @@
     },
   };
   </script>
+  
+  <style scoped>
+  /* Add your CSS styles for the topping interface */
+  /* Styling for the topping interface, categories, buttons, etc. */
 
-<style scoped>
-.topping-interface {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: #fff; 
-  border-radius: 8px; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-  font-family: 'Helvetica Neue', Arial, sans-serif; 
-  color: black;
-}
+  .topping-interface {
+    padding: 20px 0; 
+    width: 50vw;
+    position: relative;
+  }
 
-.exit-button {
+  .exit-button {
   background-color: transparent;
   border: none;
-  color: #333; 
-  font-size: 1.5rem; 
+  color: red;
+  font-size: 24px;
   cursor: pointer;
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 10px;
+  right: 10px;
 }
 
 .done-button {
+  /* Style your "Done" button */
+  /* Example styles: */
   margin-top: 20px;
   padding: 10px 20px;
-  background-color: #ff0000; 
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 1rem;
-  display: block;
-  width: 100%;
-  box-sizing: border-box; 
-  transition: background-color 0.3s ease; 
 }
 
-.done-button:hover {
-  background-color: #ff0000; 
-}
-
-.topping-options h2 {
-  text-align: center; 
-  margin-bottom: 1.5rem;
-}
-
-.topping-category {
-  margin-bottom: 1.5rem; 
-}
-
-.topping-category h3 {
-  margin-bottom: 0.5rem;
-}
-
-.topping-category div {
-  margin-bottom: 0.5rem; 
-}
-
-input[type="radio"], input[type="checkbox"] {
-  margin-right: 0.5rem;
-}
-
-label {
-  font-weight: normal;
-  cursor: pointer;
-}
-
-@media (max-width: 768px) {
-  .topping-interface {
-    width: 90vw;
-    margin: 1rem auto;
-    padding: 1rem;
-  }
-}
-
-</style>
+  
+  </style>
   

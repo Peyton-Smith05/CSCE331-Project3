@@ -3,6 +3,9 @@
     <router-link to="/login">
       <button @click="goToLoginInterface()">Order Now</button>
     </router-link>
+    <router-link to="/menu">
+        <button @click="goToMenu()">View</button>
+      </router-link>
   </div>
 
   <!-- Adding Top Ribbon for Manager Side.
@@ -27,6 +30,9 @@
       },
       goToLoginInterface() {
         this.$router.push('/login');
+      },
+      goToMenu() {
+        this.$router.push('/menu');
       },
       goToCashierInterface() {
         // Navigate to the cashier interface page using Vue Router
@@ -60,7 +66,7 @@
   }
 
   .manager-top-ribbon-tab {
-    background-color: rgba(204, 204, 204, 1);;
+    background-color: #555;
     padding: 10px;
     z-index: 6;
     width: 100vw;

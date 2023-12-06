@@ -303,10 +303,12 @@
 
     .inventory-wrap {
         position: relative;
+        background: #ccc;
+        border: 20px solid #cccc;
         top: 20vh;
         left: 10vw;
         max-height: 65vh;
-        max-width: 50vw;
+        max-width: 35vw;
         overflow-y: scroll;
     }
 
@@ -336,23 +338,30 @@
 
     .requests-wrapper {
         position: relative;
+        background: #ccc;
+        padding: 10px;
+        text-align: center;
         top: 20vh;
         left: 20vw;
         max-height: 30vh;
-        max-width: 30vw;
+        max-width: 25vw;
     }
-
+    
     .table-wrapper{
         overflow-y: auto;
     }
-
+    
     #request-id, #request-quantity, #req-id-header, #req-qty-header {
+        position: relative;
+        left: 25%;
         width: 35%;
         padding: 5px;
         background: rgb(238, 237, 237);
     }
     
     #request-item-name, #req-name-header {
+        position: relative;
+        left: 25%;
         width: 30%;
         padding: 5px;
         background: lightgray;
@@ -360,16 +369,19 @@
     
     #employee-table-title {
         position: relative;
-        top: 40vh;
-        left: 20vw;
+        top: 27vh;
+        left: 17vw;
         font-size:larger;
         font-weight: bolder;
     }
     
     .employee-wrapper {
+        background: #ccc;
+        padding: 10px;
+        text-align: center;
         position: relative;
-        top: 40vh;
-        left: 20vw;
+        top: 27vh;
+        left: 17vw;
         max-height: 30vh;
         max-width: 30vw;
         overflow-y: auto;

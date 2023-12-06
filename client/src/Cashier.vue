@@ -64,7 +64,8 @@
 import axios from 'axios';
 import { ref, onMounted } from 'vue'
 
-const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+
+  const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 
 export default {
   data() {
@@ -210,55 +211,77 @@ export default {
         console.error(error);
         this.error = 'Failed to load users.';
       }
+
     },
-    async fetchMenuItems(whatToFetch) {
+    created() {
+      const category_api = apiRedirect + "/menu-items/category";
+      this.fetchCategory(category_api);
+          // Call the second fetchData function or any other operations that depend on categories here
+      const menuItems_api = apiRedirect + "/menu-items";
+      this.fetchMenuItems(menuItems_api)
+        .then(() => {
+          this.filterByCategory(0); // After fetching menu items, apply filtering
+        });
+      this.empid = JSON.parse(this.$route.query.empid);
+    },
+    methods: {
+      async fetchCategory(whatToFetch) {
         try {
           const response = await axios.get(whatToFetch);
-          this.respondItems = response.data;
+          this.respond = response.data;
         } catch (error) {
           console.error(error);
           this.error = 'Failed to load users.';
         }
-    },
-    addItemToOrder(selectedSize, selectedTemperature, selectedSugarLevel, selectedIceLevel, selectedToppings) {
-        const existingItem = this.orderedItems.find(
-          (item) => (item.id === this.selectedItem.id && item.size === selectedSize && item.temp === selectedTemperature && item.sugarLevel === selectedSugarLevel && item.iceLevel === selectedIceLevel && this.arrayCompare(item.toppings, selectedToppings))
-        );
+      },
+      async fetchMenuItems(whatToFetch) {
+          try {
+            const response = await axios.get(whatToFetch);
+            this.respondItems = response.data;
+          } catch (error) {
+            console.error(error);
+            this.error = 'Failed to load users.';
+          }
+      },
+      addItemToOrder(selectedSize, selectedTemperature, selectedSugarLevel, selectedIceLevel, selectedToppings) {
+          const existingItem = this.orderedItems.find(
+            (item) => (item.id === this.selectedItem.id && item.size === selectedSize && item.temp === selectedTemperature && item.sugarLevel === selectedSugarLevel && item.iceLevel === selectedIceLevel && this.arrayCompare(item.toppings, selectedToppings))
+          );
 
-        console.log("New Order: " + this.selectedItem.id + " "+ selectedSize + " " + selectedTemperature + " " + selectedSugarLevel + " " + selectedIceLevel + " " + selectedToppings);
+          console.log("New Order: " + this.selectedItem.id + " "+ selectedSize + " " + selectedTemperature + " " + selectedSugarLevel + " " + selectedIceLevel + " " + selectedToppings);
 
-        console.log(existingItem);
+          console.log(existingItem);
 
-        if (existingItem != undefined) { 
-          existingItem.quantity++;
-          console.log("Increase Quantity");
-        } else {
-          this.selectedItem.size = selectedSize;
-          this.selectedItem.sugarLevel = selectedSugarLevel;
-          this.selectedItem.iceLevel = selectedIceLevel;
-          this.selectedItem.temp = selectedTemperature;
-          this.selectedItem.toppings = selectedToppings;
-          this.selectedItem.showDetails = false;
-          this.selectedItem.itemID = this.itemsID;
-          this.orderedItems.push(Object.assign({}, this.selectedItem));
-          this.itemsID++;
-          console.log("New Item");
-        }
-    },
-    arrayCompare(arr1, arr2){
-      if (arr1.length !== arr2.length) {
-        return false;
-      }
-      
-      for (let i = 0; i < arr1.length; i++) {
-        // Compare properties of each object in the array
-        if (arr1[i].id !== arr2[i].id || arr1[i].quantity !== arr2[i].quantity) {
+          if (existingItem != undefined) { 
+            existingItem.quantity++;
+            console.log("Increase Quantity");
+          } else {
+            this.selectedItem.size = selectedSize;
+            this.selectedItem.sugarLevel = selectedSugarLevel;
+            this.selectedItem.iceLevel = selectedIceLevel;
+            this.selectedItem.temp = selectedTemperature;
+            this.selectedItem.toppings = selectedToppings;
+            this.selectedItem.showDetails = false;
+            this.selectedItem.itemID = this.itemsID;
+            this.orderedItems.push(Object.assign({}, this.selectedItem));
+            this.itemsID++;
+            console.log("New Item");
+          }
+      },
+      arrayCompare(arr1, arr2){
+        if (arr1.length !== arr2.length) {
           return false;
         }
-      }
-      
-      return true;
-    },
+        for (let i = 0; i < arr1.length; i++) {
+          // Compare properties of each object in the array
+          if (arr1[i].id !== arr2[i].id || arr1[i].quantity !== arr2[i].quantity) {
+            return false;
+          }
+        }
+        
+        return true;
+      },
+
     removeItemFromOrder(orderItem) {
       if (orderItem.quantity > 1) {
         orderItem.quantity--;
@@ -382,7 +405,8 @@ export default {
         return this.orderedItems.length > 0;
     },
   }
-};
+}};
+
 </script>
   
 <style scoped>
@@ -539,27 +563,8 @@ font-weight: bold; /* Bold font for emphasis */
     background-color: #f5f5f5; /* Light grey background */
     padding: 10px 20px;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Shadow at the top */
-    display: flex;
-    justify-content: flex-end; /* Align button to the right */
 }
 
-.checkout-button {
-    padding: 10px 20px;
-    background-color: #ff1a1a; /* Green background */
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.checkout-button:hover {
-    background-color: #dc6060; /* Darker green on hover */
-}
-
-.checkout-button.inactive {
-    background-color: grey; /* Grey color when inactive */
-    cursor: not-allowed; /* Change cursor to indicate disabled */
-}
 
 </style>
+

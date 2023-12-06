@@ -55,6 +55,7 @@ export default {
                     console.error(error);
                 })
             },
+            empid: 0,
             email: '',
             pswd:  '',
             popupError: false,
@@ -65,6 +66,26 @@ export default {
             try {
                 const login_query = apiRedirect + "/login/info/" + this.email;
                 const response = await axios.get(login_query);
+                // If it is no cashier/manager simply go straight to customer.
+                if(response.data.length == 0) {this.goToCustomer();   }
+                const user_info = response.data[0];
+                if(user_info.password !== this.pswd) {throw new Error("Invalid Password was provided");}
+                // Start routing to customer, cashier, and manager.
+                if(user_info.title == "Cashier") {
+                    this.empid = user_info.empid;
+                    this.goToCashier(user_info.empid);
+                } else if(user_info.title == "Manager") {
+                    this.goToManager();
+                }
+            } catch (error) {
+                this.openPopup()
+                console.error(error);
+            }
+        },
+        async handleGoogleOAuth() {
+            try {
+                const google_login_query = apiRedirect + "/login/info/" + this.email;
+                const response = await axios.get(google_login_query);
                 const user_info = response.data[0];
                 
                 if(!user_info) {
@@ -112,7 +133,30 @@ export default {
         
         goToCashier() {
             // Navigate to the cashier interface page using Vue Router
-            this.$router.push('/cashier');
+            this.$router.push({
+                name: 'Cashier',
+                query: {
+                    empid: JSON.stringify(this.empid),
+                }
+            });
+        },
+        goToCustomer() {
+            this.$router.push({
+                name: 'Customer',
+                query: {
+                    empid: JSON.stringify(0),
+                }
+            });
+        },
+        goToManager(empid) {
+            // TODO create rerouting to manager site.
+            console.log("Rerouting to manager side");
+            this.$router.push({
+                name: 'Manager',
+                query: {
+                    empid: JSON.stringify(empid),
+                }
+            });
         },
         goToCustomer() {
             this.$router.push('/cashier');

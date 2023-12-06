@@ -27,7 +27,9 @@
           <option v-for="time in pickupTimes" :key="time" :value="time">{{ time }}</option>
         </select>
       </div>
+
       <button @click="confirmOrder">{{checkoutDetails[8]}}</button>
+
     </div>
   </template>
 
@@ -35,37 +37,41 @@
 
 const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 import axios from 'axios';
+
+
 export default {
-
-
   created() {
   if (this.$route.query.cartItems) {
       this.cartItems = JSON.parse(this.$route.query.cartItems);
+      this.subtotal = parseFloat(JSON.parse(this.$route.query.total));
+      this.tax = parseFloat(JSON.parse(this.$route.query.tax));
+      this.empid = parseInt(JSON.parse(this.$route.query.empid));
     }
   },
   data() {
     return {
+
       currentState: false,
       checkoutDetails: ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"],
       cartItems: [], 
+
+      subtotal: 0.0,
+      tax: 0.0, 
+
       tip: 0,
+      empid: 0,
       selectedPickupTime: '',
       pickupTimes: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'
       ],
     };
   },
   computed: {
-    subtotal() {
-      return this.cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    },
-    tax() {
-      return this.subtotal * 0.07; // Assuming 7% tax
-    },
     total() {
-      return this.subtotal + this.tax + parseFloat(this.tip);
+      return (this.subtotal + this.tax).toFixed(2);
     },
   },
   methods: {
+
     toggle() {
       if (this.currentState == true) {
         this.currentState = false;
@@ -80,6 +86,7 @@ export default {
       // Logic to send order details to backend API
       console.log('Order confirmed with details:', this.cartItems, this.total, this.selectedPickupTime);
       // Implement API call here
+
     },
     async translateES() {
       try {
