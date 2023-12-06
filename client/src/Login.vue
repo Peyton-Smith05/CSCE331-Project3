@@ -64,20 +64,19 @@ export default {
     methods: {
         async login() {
             try {
-                const login_query = apiRedirect + "/login/info/" + this.email + "/" + this.pswd;
+                const login_query = apiRedirect + "/login/info/" + this.email;
                 const response = await axios.get(login_query);
-                const user_info = response.data[0];
 
-                console.log(user_info);
-                
+                // If it is no cashier/manager simply go straight to customer.
+                if(response.data.length == 0) {this.goToCustomer();   }
+                const user_info = response.data[0];
+                if(user_info.password !== this.pswd) {throw new Error("Invalid Password was provided");}
                 // Start routing to customer, cashier, and manager.
                 if(user_info.title == "Cashier") {
                     this.empid = user_info.empid;
                     this.goToCashier(user_info.empid);
                 } else if(user_info.title == "Manager") {
-                    this.goToManager(user_info.empid);
-                } else if(user_info.title == "Customer") {
-                    this.goToCustomer();   
+                    this.goToManager();
                 }
             } catch (error) {
                 this.openPopup()
