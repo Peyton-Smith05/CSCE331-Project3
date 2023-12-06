@@ -1,18 +1,3 @@
-<!-- <template>
-    <div class="menu-items-wrapper">
-        <div class="menu-items">
-            <h3>Menu Items</h3>
-            <ul>
-            <li v-for="menuItem in filteredMenuItems" :key="menuItem.id">
-                <div>
-                {{ menuItem.name }} - ${{ menuItem.price }}
-                <button @click="redirectToToppings(menuItem)">Add to Order</button>
-                </div>
-            </li>
-            </ul>
-        </div>
-    </div>
-</template> -->
 <template>
   <div class="menu-items-wrapper">
     <div class="menu-items-grid">
@@ -42,7 +27,7 @@ export default {
   methods: {
     redirectToToppings(item) {
       this.$emit('itemChosen', item);
-      this.$router.push({ name: 'Toppings', params: { } });
+      this.$router.push({ name: 'CustomerToppings', params: { } });
     },
   },
 };

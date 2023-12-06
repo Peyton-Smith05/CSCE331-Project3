@@ -23,44 +23,55 @@
           <option v-for="time in pickupTimes" :key="time" :value="time">{{ time }}</option>
         </select>
       </div>
-      <button @click="confirmOrder">Confirm Order</button>
+      <button @click="submitOrder">Confirm Order</button>
     </div>
   </template>
 
 <script>
+import axios from 'axios';
+
+const apiRedirect = (window.location.href.slice(0, 17) == "http://localhost:") ? "http://localhost:3000" : "";
+
 export default {
-
-
   created() {
   if (this.$route.query.cartItems) {
       this.cartItems = JSON.parse(this.$route.query.cartItems);
+      this.subtotal = parseFloat(JSON.parse(this.$route.query.total));
+      this.tax = parseFloat(JSON.parse(this.$route.query.tax));
+      this.empid = parseInt(JSON.parse(this.$route.query.empid));
     }
   },
   data() {
     return {
-      cartItems: [], 
+      cartItems: [],
+      subtotal: 0.0,
+      tax: 0.0, 
       tip: 0,
+      empid: 0,
       selectedPickupTime: '',
       pickupTimes: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'
       ],
     };
   },
   computed: {
-    subtotal() {
-      return this.cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    },
-    tax() {
-      return this.subtotal * 0.07; // Assuming 7% tax
-    },
     total() {
-      return this.subtotal + this.tax + parseFloat(this.tip);
+      return (this.subtotal + this.tax).toFixed(2);
     },
   },
   methods: {
-    confirmOrder() {
-      // Logic to send order details to backend API
-      console.log('Order confirmed with details:', this.cartItems, this.total, this.selectedPickupTime);
-      // Implement API call here
+    async submitOrder() {
+      console.log("Submitting...");
+      // TODO: Fix time zone issue
+      const now = new Date();
+      const date = now.toISOString().split('T')[0];
+      const time = now.toISOString().split('T')[1];
+      try {
+        const response = await axios.post(apiRedirect + '/submit-order', { drinks: this.cartItems, total: this.total, tip: this.tip, empid: this.empid, date: date, time: time });
+        console.log(response.data);
+        this.$router.push('/');
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 };

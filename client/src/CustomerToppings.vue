@@ -71,7 +71,7 @@
         temperatureOptions: ['Hot', 'Cold'],
         sugarLevelOptions: ['30%', '50%', '70%', '100%', '120%'],
         iceLevelOptions: ['None', 'Less', 'Regular'],
-        respond: [],
+        toppings_menu: [],
       };
     },
     created(){
@@ -84,7 +84,7 @@
       async fetchToppings(whatToFetch) {
         try {
           const response = await axios.get(whatToFetch);
-          this.respond = response.data;
+          this.toppings_menu = response.data;
         } catch (error) {
           console.error(error);
           this.error = 'Failed to load users.';
@@ -92,17 +92,17 @@
       },
       closeToppingInterface() {
         // Handle closing of the topping interface
-        this.$router.push({ name: 'MenuItems', params: {} });
+        this.$router.push({ name: 'CustomerMenuItems', params: {} });
       },
       submitOrder() {
-        this.$emit('sendOrder', this.selectedSize, this.selectedTemperature, this.selectedSugarLevel, this.selectedIceLevel, this.selectedToppings);
-        this.$router.push({ name: 'MenuItems', params: {} });
+        let temp = parseInt(this.selectedSugarLevel.replace("%", ""));
+        this.$emit('sendOrder', this.selectedSize, this.selectedTemperature, temp, this.selectedIceLevel, this.selectedToppings);
+        this.$router.push({ name: 'CustomerMenuItems', params: {} });
       },
-      // Add methods to handle selection and processing of toppings
     },
     computed: {
       toppingsOptions() {
-        return this.respond.map((item) => {
+        return this.toppings_menu.map((item) => {
         return {
           id: item.menuid,
           name: item.name,
