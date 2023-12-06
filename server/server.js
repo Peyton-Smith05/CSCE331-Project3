@@ -179,6 +179,9 @@ app.get('/menu-items/toppings', async (req, res) => {
   }
 });
 
+// ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
+app.get("/login/info/:email", async (req, res) => {
+  try {
 async function getNextIds() {
   // Query for the maximum orderid
   const orderRes = await pool.query('SELECT MAX(orderid) as maxorderid FROM order_log');
@@ -256,7 +259,6 @@ app.get("/login/info/google/:email", async (req, res) => {
 })
 
 // ======= MANAGER API REQUESTS FOR INVENTORY INFORMATION ==========
-
 app.get("/manager/inventory", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM inventory");
@@ -270,7 +272,7 @@ app.get("/manager/inventory", async (req, res) => {
 
 app.get("/manager/employee", async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM employee WHERE employee.title=\'Cashier\'");
+    const { rows } = await pool.query("SELECT * FROM employee WHERE employee.title!=\'Manager\'");
     res.json(rows);
   } catch(err) {
     console.error(err.message);
@@ -278,6 +280,66 @@ app.get("/manager/employee", async (req, res) => {
   }
 })
 
+app.post("/manager/api/new-request", async (req, res) => {
+  const { item_name, quantity, request_id } = req.body;
+  const reqIdQuery = "SELECT request_id FROM inventory_requests ORDER BY request_id DESC LIMIT 1;"
+  const insertReqQuery = "INSERT INTO inventory_requests (item_name, quantity, request_id) VALUES($1, $2, $3)"
+  try {
+    // Get new request_id from db.
+    let ReqIdResponse = await pool.query(ReqIdQuery);
+    // Variable contains the new, unique requestid.
+    let newReqId = ReqIdResponse.rows[0].request_id + 1;
+    
+    await pool.query(insertReqQuery, [item_name, quantity, newReqId]);
+    res.status(201).send("Inventory Request added succesfully");
+    
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.post("/manager/api/delete-request", async(req, res) => {
+  const {item_name, quantity, request_id} = req.body;
+  const deleteReqQuery = "DELETE FROM inventory_requests WHERE request_id=" + request_id;
+  try {
+    await pool.query(deleteReqQuery);
+    res.status(201).send("Inventory request deleted succesfully");
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.post("/manager/api/new-employee", async(req, res) => {
+  const {empid, fname, lname, title, email, password} = req.body; 
+  const empIdQuery = "SELECT empid FROM employee ORDER BY empid DESC LIMIT 1;";
+  const insertEmpQuery = "INSERT INTO employee (empid, fname, lname, title, email, password) VALUES($1, $2, $3, $4, $5, $6)"
+  try {
+    // Get new empid from db.
+    let empIdResponse = await pool.query(empIdQuery);
+    let newEmpId = empIdResponse.rows[0].empid + 1000;
+    await pool.query(
+      insertEmpQuery,
+      [newEmpId, fname, lname, title, email, password]);
+    res.status(201).send("Employee addes successfully");
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.post("/manager/api/delete-employee", async(req, res) => {
+  const {empid, fname, lname, title, email, password} = req.body; 
+  const deleteEmpQuery = "DELETE FROM employee WHERE empid=" + empid;
+  try {
+    await pool.query(deleteEmpQuery);
+    res.status(201).send("Inventory request deleted succesfully");
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
 app.get("/manager/inventory_requests", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM inventory_requests");
@@ -285,6 +347,39 @@ app.get("/manager/inventory_requests", async (req, res) => {
   } catch(err) {
     console.error(err.message);
     res.status(500).json('Server Error');
+  }
+})
+
+app.post("/manager/api/orders_data", async (req, res) => {
+  const { datesSelected } = req.body;
+  // Casting all passed dates to Date datatype.
+  casted_dates = [];
+  datesSelected.forEach((element) => {
+    let casted_element = new Date(element);
+    casted_dates.push("\'" + 
+      casted_element.getFullYear() + "-" +
+       (casted_element.getMonth() + 1).toString().padStart(2, '0') + "-" + 
+       casted_element.getDate().toString().padStart(2, '0')
+       + "\'");
+  });
+
+  // Creating SQL Query
+  const getDateSalesQuery = "SELECT total FROM order_log WHERE date=";
+  try {
+    var result = [];
+    for(let i = 0; i < casted_dates.length; i++) {
+      let response = await pool.query(
+        getDateSalesQuery + casted_dates[i]
+        );
+      result.push({
+        dataDate: casted_dates[i],
+        data: response,
+      });
+    }
+    res.json({ result });
+  } catch(err) {
+    console.error(err.message);
+      res.status(500).json('Server Error');
   }
 })
 
