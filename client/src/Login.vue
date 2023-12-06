@@ -34,6 +34,7 @@
 
 <script>
 import axios from 'axios';
+import { useRouter } from 'vue-router'
 import { googleOneTap } from 'vue3-google-login';
 import { decodeCredential } from 'vue3-google-login';
 import LoginPopup from './components/LoginPopup.vue';
@@ -50,39 +51,34 @@ export default {
   components: {
     LoginPopup,
     TextSlider
-},
+  },
   setup() {
+    const router = useRouter()
     const globalData = inject('globalTextMod');
-    const empid = ref(0);
     const email = ref('');
     const pswd = ref('');
+    const empid = ref(0);
     const popupError = ref(false);
 
 
     const login = async () => {
       try {
-        const login_query = `${apiRedirect}/login/info/${email.value}`;
+        const login_query = apiRedirect + "/login/info/" + email.value;
         const response = await axios.get(login_query);
-
-        if (response.data.length === 0) {
-          goToCustomer();
-        }
-
+        // If it is no cashier/manager simply go straight to customer.
+        if(response.data.length == 0) {goToCustomer();}
         const user_info = response.data[0];
-
-        if (user_info.password !== pswd.value) {
-          throw new Error('Invalid Password was provided');
-        }
-
-        if (user_info.title === 'Cashier') {
-          empid.value = user_info.empid;
-          goToCashier(user_info.empid);
-        } else if (user_info.title === 'Manager') {
-          goToManager();
+        if(user_info.password !== pswd.value) {throw new Error("Invalid Password was provided");}
+        // Start routing to customer, cashier, and manager.
+        if(user_info.title == "Cashier") {
+            empid.value = user_info.empid;
+            goToCashier(user_info.empid);
+        } else if(user_info.title == "Manager") {
+            goToManager();
         }
       } catch (error) {
-        openPopup();
-        console.error(error);
+          openPopup()
+          console.error(error);
       }
     };
 
@@ -126,27 +122,27 @@ export default {
       popupError.value = false;
     };
 
-    const goToCashier = (empid) => {
-      this.$router.push({
-        name: 'Cashier',
-        query: {
-          empid: JSON.stringify(empid),
-        },
+    const goToCashier = () => {
+      // Navigate to the cashier interface page using Vue Router
+      router.push({
+          name: 'Cashier',
+          query: {
+              empid: JSON.stringify(empid.value),
+          }
       });
     };
-
     const goToCustomer = () => {
-      this.$router.push({
-        name: 'Customer',
-        query: {
-          empid: JSON.stringify(0),
-        },
+      router.push({
+          name: 'Customer',
+          query: {
+              empid: JSON.stringify(0),
+          }
       });
     };
 
     const goToManager = (empid) => {
       console.log('Rerouting to manager side');
-      this.$router.push({
+      router.push({
         name: 'Manager',
         query: {
           empid: JSON.stringify(empid),
