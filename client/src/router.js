@@ -46,7 +46,7 @@ const routes = [
   {
     path: '/customer',
     name: 'Customer',
-    component: Customer,
+    component: Cashier,
     children: [
       {
         path: '', 

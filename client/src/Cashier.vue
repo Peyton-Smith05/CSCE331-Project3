@@ -395,9 +395,9 @@ export default {
 .cashier-interface {
   display: flex;
   width: 100vw;
-  height: 90vh;
+  height: 95vh;
   position: absolute;
-  top: 10vh;
+  top: 0vh;
   left: 0vw;
   font-size: 16px;
   font-family: 'Arial', sans-serif;
@@ -414,35 +414,34 @@ export default {
 
 .ordered-items-wrapper {
   flex: 1 1 20%;
-  background: #333; /* White background */
+  background: #333; 
   padding: 20px;
-  border-radius: 8px; /* Rounded corners for the container */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
   color: #fff;
 }
 
 .ordered-items h3 {
-text-align: center; /* Center the heading */
-color: #333; /* Dark grey color for text */
+text-align: center; 
+color: #333; 
 margin-bottom: 1rem;
 }
 
 .ordered-items ul {
-list-style-type: none; /* Remove default list styling */
+list-style-type: none; 
 padding: 0;
 margin: 0;
 }
 
 .ordered-items li {
 padding: 10px;
-border-bottom: 1px solid #fff; /* Light border for each item */
+border-bottom: 1px solid #fff; 
 cursor: pointer;
-transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+transition: background-color 0.3s ease; 
 }
 
 .ordered-items li:hover {
-background-color: #000; /* Slight highlight on hover */
+background-color: #000; 
 }
 
 .ordered-items li div {
@@ -452,42 +451,41 @@ justify-content: space-between;
 }
 
 .ordered-items span {
-font-weight: bold; /* Make the item name and quantity bold */
+font-weight: bold;
 }
 
 .item-details {
 padding: 10px;
-background: #000; /* Slightly different background for the dropdown */
-border-radius: 4px; /* Rounded corners for the dropdown */
+background: #000; 
+border-radius: 4px;
 margin-top: 10px;
 }
 
 .item-details p {
-margin: 5px 0; /* Spacing between details */
+margin: 5px 0; 
 }
 
 button {
 padding: 5px 15px;
-background-color: #e74c3c; /* Red color for remove button */
+background-color: #e74c3c; 
 color: white;
 border: none;
 border-radius: 4px;
 cursor: pointer;
-transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+transition: background-color 0.3s ease;
 }
 
 button:hover {
-background-color: #c0392b; /* Darker red on hover */
+background-color: #c0392b;
 }
 
 .total {
 margin-top: 20px;
-text-align: right; /* Align the total to the right */
-font-size: 1.1rem; /* Slightly larger font size for total */
-font-weight: bold; /* Bold font for emphasis */
+text-align: right;
+font-size: 1.1rem; 
+font-weight: bold;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
 .ordered-items li div {
   flex-direction: column;
@@ -499,8 +497,8 @@ font-weight: bold; /* Bold font for emphasis */
   flex: 1 1 10%;
   top: 0;
   left: 0;
-  height: 90vh;
-  top: 10vh;
+  height: 95vh;
+  top: 0vh;
   background-color: rgb(65, 65, 65);
   padding: 20px;
 }
@@ -541,9 +539,9 @@ font-weight: bold; /* Bold font for emphasis */
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #f5f5f5; /* Light grey background */
+    background-color: #f5f5f5; 
     padding: 10px 20px;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Shadow at the top */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
 
 
