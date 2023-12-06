@@ -1,14 +1,26 @@
 <template>
+    <!-- @vuese
+    This template defines a popup layout with a slot for content insertion and a confirm button. The slot allows for dynamic content to be inserted into the popup. -->
     <div class="inv-popup">
-        <div class="inv-inner">
-            <slot />
-            <button class="popup-close" @click="closePopup()"> Confirm </button>
-        </div>
+      <div class="inv-inner">
+        <!-- Slot for inserting dynamic content -->
+        <slot />
+        <!-- Button to confirm and close the popup -->
+        <button class="popup-close" @click="closePopup()"> Confirm </button>
+      </div>
     </div>
-</template>
+  </template>
     
 <script>
+    /**
+     * @vuese
+     * This component is a popup window that can contain dynamic content. It receives a method as a prop to handle the closing action, which is triggered by a confirm button.
+     */
     export default {
+        /**
+         * @vuese
+         * A function passed as a prop to handle the action of closing the popup. This function is triggered by the confirm button.
+         */
         props: ['closePopup']
     }
 </script>

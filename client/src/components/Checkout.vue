@@ -40,6 +40,11 @@ import axios from 'axios';
 
 
 export default {
+  /**
+   * @vuese
+   * A checkout component that handles the display and processing of an order, 
+   * including item details, cost calculations, and order confirmation.
+   */
   created() {
   if (this.$route.query.cartItems) {
       this.cartItems = JSON.parse(this.$route.query.cartItems);
@@ -50,28 +55,68 @@ export default {
   },
   data() {
     return {
-
+      /**
+       * @vuese
+       * Represents the current state for language translation.
+       */
       currentState: false,
+      /**
+       * @vuese
+       * Details and labels used in the checkout process.
+       */
       checkoutDetails: ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"],
+      /**
+       * @vuese
+       * The list of items in the cart.
+       */
       cartItems: [], 
-
+      /**
+       * @vuese
+       * Subtotal of the cart items.
+       */
       subtotal: 0.0,
+      /**
+       * @vuese
+       * Tax applicable on the cart items.
+       */
       tax: 0.0, 
-
+      /**
+       * @vuese
+       * Tip amount entered by the user.
+       */
       tip: 0,
+       /**
+       * @vuese
+       * Employee ID handling the order.
+       */
       empid: 0,
+      /**
+       * @vuese
+       * Selected pickup time for the order.
+       */
       selectedPickupTime: '',
+      /**
+       * @vuese
+       * Available pickup times for the order.
+       */
       pickupTimes: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'
       ],
     };
   },
   computed: {
+    /**
+     * @vuese
+     * Computes the total cost of the order including the subtotal, tax, and tip.
+     */
     total() {
       return (this.subtotal + this.tax).toFixed(2);
     },
   },
   methods: {
-
+    /**
+     * @vuese
+     * Toggles the translation of checkout details between English and Spanish.
+     */
     toggle() {
       if (this.currentState == true) {
         this.currentState = false;
@@ -82,6 +127,10 @@ export default {
         
       }
     },
+    /**
+     * @vuese
+     * Confirms the order, posts it to a server, and redirects to the home page.
+     */
     async confirmOrder() {
       console.log("Submitting...");
       // TODO: Fix time zone issue
@@ -96,7 +145,10 @@ export default {
         console.error(error);
       }
     },
-  
+    /**
+     * @vuese
+     * Translates checkout details to Spanish.
+     */
     async translateES() {
       try {
         for (let i = 0; i < this.checkoutDetails.length; i++) {
@@ -109,6 +161,10 @@ export default {
         console.error(error);
       }
     },
+    /**
+     * @vuese
+     * Reverts the checkout details to their original values (English).
+     */
     originalValue() {
       this.checkoutDetails = ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"]
     },

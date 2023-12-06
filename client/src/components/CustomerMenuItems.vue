@@ -29,30 +29,55 @@
 
 <script>
 import axios from 'axios'
+// Determines the API redirect URL based on the window's location.
 const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 export default {
+  /**
+   * @vuese
+   * This component is responsible for displaying menu items and handling the addition of items to an order. It emits an event when an item is chosen and redirects to the toppings customization page.
+   */
   data() {    
     return {
+      /**
+       * @vuese
+       * An array to store categories derived from `filteredMenuItems`.
+       */
       category: []
     }
   },
   props: {
+    /**
+     * @vuese
+     * An array of menu items to be displayed in the grid. Passed as a prop from a parent component.
+     */
     filteredMenuItems: {
       type: Array,
       default: () => [],
     },
+    /**
+     * @vuese
+     * Text for the 'Add To Order' button. Can be customized through props.
+     */
     addToOrder: {
       type: String,
       default: () => "Add To Order",
     },
   },
   methods: {
+    /**
+     * @vuese
+     * Emits the 'itemChosen' event with the selected item and navigates to the 'CustomerToppings' route for item customization.
+     */
     redirectToToppings(item) {
       this.$emit('itemChosen', item);
       this.$router.push({ name: 'CustomerToppings', params: { } });
     },
   },
   watch: {
+    /**
+     * @vuese
+     * Watches for changes in `filteredMenuItems` and updates the `category` data property accordingly.
+     */
     filteredMenuItems: function(newVal) { 
         this.category = newVal
     }

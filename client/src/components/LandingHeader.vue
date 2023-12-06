@@ -1,10 +1,13 @@
 <template>
+  <!-- @vuese
+  This template renders the landing page header, which includes the logo, a text slider component, and two buttons for navigation. The buttons are styled dynamically based on a global font size modifier. -->
   <div class="landing-header">
     <header>
       <img src="./assets/Kung_Fu_Tea_Official_Logo.png" alt="Boba Tea Shop Logo" class="logo" />
       <TextSlider></TextSlider>
       <h2></h2>
       <div class="buttons">
+        <!-- Buttons to navigate to menu and login -->
         <button :style="{ fontSize: buttonFontSize }" @click="goToMenu">View Menu</button>
         <button :style="{ fontSize: buttonFontSize }" @click="goToLogin">Login</button>
       </div>
@@ -19,24 +22,34 @@
 
 export default {
   components: {
-    TextSlider // Register the TextSlider component
+    TextSlider 
   },
   setup() {
     // Inject the global variable 'textMod'
     const globalData = inject('globalTextMod');
     // Set the initial textSize here or fetch it from some source
     const router = useRouter()
-    // Calculate button font size based on textSize and textMod
+    /**
+     * @vuese
+     * A computed property that calculates the font size for buttons based on a global modifier.
+     */
     const buttonFontSize = computed(() => {
       const textSize = 13;
       return `${textSize * globalData.textMod}px`;
     });
 
-    // Define methods like goToMenu and goToLogin
+    /**
+     * @vuese
+     * Navigates to the menu page when invoked.
+     */
     const goToMenu = () => {
       router.push('/menu');
     };
 
+    /**
+     * @vuese
+     * Navigates to the login page when invoked.
+     */
     const goToLogin = () => {
       router.push('/login');
     };

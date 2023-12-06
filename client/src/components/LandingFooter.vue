@@ -1,4 +1,6 @@
 <template>
+  <!-- @vuese
+  This template section renders a footer with a weather input feature. It includes a text input for location, a button to fetch weather data, and a paragraph to display the fetched weather information. -->
   <footer>
     <div class="weather-input">
       <input type="text" placeholder="Enter location" class="rounded-textbox" v-model="location"/>
@@ -22,14 +24,20 @@ export default {
     const weatherInfo = ref('');
     const location = ref('');
 
-    // Define methods
+    /**
+     * @vuese
+     * An asynchronous function to fetch weather data from an API based on the entered location. It updates the weatherInfo reactive variable with the response.
+     */
     async function getWeather() {
       const request = `https://api.openweathermap.org/data/2.5/weather?q=${location.value}&appid=cb79dd33fa3e6a684d5325a7c31b1e4b&units=imperial`;
       const response = await axios.get(request);
       weatherInfo.value = response.data;
     }
 
-    // Define computed properties
+    /**
+     * @vuese
+     * A computed property to dynamically calculate the font size of the weather button based on a global modifier.
+     */
     const buttonFontSize = computed(() => {
       const textSize = 13;
       const tSize = globalData ? globalData.textMod : 1;

@@ -1,4 +1,8 @@
 <template>
+    <!-- @vuese
+    The template includes various InventoryPopup components for adding, deleting, and managing inventory items and employee data. Each popup contains form fields for inputting relevant data and is conditionally rendered based on specific flags in the data. -->
+
+    <!-- Popup for adding new inventory requests -->
     <InventoryPopup v-if="addInvPopup" :closePopup=" () => handleNewInvReq()">
         <h2 style="font-weight: bolder;">Request a new Inventory</h2>
         <div class="popup-entry" style="display: flex;">
@@ -10,6 +14,7 @@
             <input type="text" v-model="reqQuantity" placeholder="1">
         </div>
     </InventoryPopup>
+    <!-- Popup for adding new employees -->
     <InventoryPopup v-if="addEmpPopup" :closePopup=" () => handleNewEmp()">
         <h2 style="font-weight: bolder;">Add a New Employee!</h2>
         <div class="popup-entry" style="display: flex;">
@@ -33,6 +38,7 @@
             <input type="text" v-model="empPswd" placeholder="1234">
         </div>
     </InventoryPopup>
+    <!-- Popup for deleting inventory requests -->
     <InventoryPopup v-if="delInvPopup" :closePopup=" () => handleDelInvReq()">
         <h2 style="font-weight: bolder;">Delete an Inventory Request</h2>
         <div class="popup-entry" style="display: flex;">
@@ -40,6 +46,7 @@
             <input type="text" v-model="reqId" placeholder="1234">
         </div>
     </InventoryPopup>
+    <!-- Popup for deleting employees -->
     <InventoryPopup v-if="delEmpPopup" :closePopup=" () => handleDelEmp()">
         <h2 style="font-weight: bolder;">Delete an Employee</h2>
         <div class="popup-entry" style="display: flex;">
@@ -180,11 +187,16 @@
             }
         },
         created() {
+            // Initial data fetching for inventory, requests, and employees
             this.getInventoryData();
             this.getInvRequestData();
             this.getEmployeeData();
         },  
         methods: {
+            /**
+             * @vuese
+             * Retrieves and sets inventory data from the API.
+             */
             async getInventoryData() {
                 const inventory_request = apiRedirect + "/manager/inventory";
                 try {
@@ -195,6 +207,10 @@
                     this.err = 'Failed to load inventory.';
                 }
             },
+            /**
+             * @vuese
+             * Retrieves and sets inventory request data from the API.
+             */
             async getInvRequestData() {
                 const invRequest_request = apiRedirect + "/manager/inventory_requests";
                 try {
@@ -205,6 +221,10 @@
                     this.err = 'Failed to load inventory requests';
                 }
             },
+            /**
+             * @vuese
+             * Retrieves and sets employee data from the API.
+             */
             async getEmployeeData() {
                 const employee_request = apiRedirect + "/manager/employee";
                 try {
@@ -215,10 +235,21 @@
                     this.err = 'Failed to load employees';
                 }
             },
-
+            /**
+             * @vuese
+             * Toggles the visibility of the Inventory Request addition popup.
+             */
             AddInvRequest() { this.addInvPopup = !this.addInvPopup },
+            /**
+             * @vuese
+             * Toggles the visibility of the Inventory Request deletion popup.
+             */
             DeleteInvRequest() {this.delInvPopup = !this.delInvPopup},
 
+            /**
+             * @vuese
+             * Handles submission of a new inventory request to the API.
+             */
             async handleNewInvReq() {
                 const requestPostAPI = apiRedirect + "/manager/api/new-request"
                 try {
@@ -235,6 +266,10 @@
                 this.addInvPopup = !this.addInvPopup
             },
 
+            /**
+             * @vuese
+             * Handles submission of a delete inventory request to the API.
+             */
             async handleDelInvReq() {
                 const deletePostQuery = apiRedirect + "/manager/api/delete-request";
                 try {
@@ -249,10 +284,19 @@
                 this.delInvPopup = !this.delInvPopup;
             },
 
+            /**
+             * @vuese
+             * Toggles the visibility of the Employee addition popup.
+             */
             addEmployee() { this.addEmpPopup = !this.addEmpPopup },
-
+            /** @vuese
+             * Toggles the visibility of the Employee deletion popup.
+             */
             delEmployee() { this.delEmpPopup = !this.delEmpPopup},
-
+            /**
+             * @vuese
+             * Handles submission of a delete employee request to the API.
+             */
             async handleNewEmp() {
                 const addEmpAPI = apiRedirect + "/manager/api/new-employee"
                 try {
