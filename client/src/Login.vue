@@ -125,7 +125,7 @@ export default {
     const goToCashier = () => {
       // Navigate to the cashier interface page using Vue Router
       router.push({
-          name: 'Cashier',
+          name: 'CashierMenuItems',
           query: {
               empid: JSON.stringify(empid.value),
           }
@@ -133,7 +133,7 @@ export default {
     };
     const goToCustomer = () => {
       router.push({
-          name: 'Customer',
+          name: 'CustomerMenuItems',
           query: {
               empid: JSON.stringify(0),
           }

@@ -1,8 +1,8 @@
 <template>
     <div class="checkout-container">
       <button @click="toggle()" id="toggle_button">
-        <span v-if="isActive" class="toggle__label">Traducir</span>
-        <span v-if="! isActive" class="toggle__label">Translate</span>
+        <span v-if="currentState" class="toggle__label">Traducir</span>
+        <span v-if="! currentState" class="toggle__label">Translate</span>
       </button>
       <h1>{{checkoutDetails[0]}}</h1>
       <div class="cart-items">
@@ -50,14 +50,11 @@ export default {
   },
   data() {
     return {
-
       currentState: false,
       checkoutDetails: ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"],
       cartItems: [], 
-
       subtotal: 0.0,
       tax: 0.0, 
-
       tip: 0,
       empid: 0,
       selectedPickupTime: '',
@@ -71,7 +68,6 @@ export default {
     },
   },
   methods: {
-
     toggle() {
       if (this.currentState == true) {
         this.currentState = false;
@@ -79,7 +75,6 @@ export default {
       } else {
         this.currentState = true;
         this.translateES()
-        
       }
     },
     async confirmOrder() {

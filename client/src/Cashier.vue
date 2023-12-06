@@ -101,16 +101,24 @@ export default {
       }
     };
   },
-  created() {
-    const category_api = apiRedirect + "/menu-items/category";
-    this.fetchCategory(category_api);
-    const menuItems_api = apiRedirect + "/menu-items";
-    this.fetchMenuItems(menuItems_api)
-      .then(() => {
-        this.filterByCategory(0); 
-      });
+  mounted() {
+    console.log('Heee');
+    this.fetchData();
+    this.$forceUpdate();
   },
   methods: {
+    async fetchData() {
+      try {
+        const category_api = apiRedirect + "/menu-items/category";
+        await this.fetchCategory(category_api);
+        const menuItems_api = apiRedirect + "/menu-items";
+        await this.fetchMenuItems(menuItems_api);
+        this.filterByCategory(0);
+      } catch (error) {
+        console.error(error);
+        // Handle error appropriately
+      }
+    },
     toggle() {
       if (this.currentState == true) {
         this.currentState = false;
