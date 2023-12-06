@@ -1,4 +1,5 @@
 <template>
+  <LandingHeader/>
   <div class="menu">
     <div v-if="categories.length > 0" class="categories-grid">
       <div class="categories-container">
@@ -9,12 +10,12 @@
             class="category"
             :style="getCategoryStyles(category)"
           >
-            <h2 class="category-title">{{ capitalize(category) }}</h2>
+          <h2 :style="{ fontSize: titleFontMod }" class="category-title">{{ capitalize(category) }}</h2>
             <div
               v-if="filteredItems[category]"
               v-for="(item, itemIndex) in filteredItems[category]"
               :key="itemIndex"
-              class="menu-item"
+              class="menu-item" :style="style={ fontSize: itemFontMod }"
             >
               <p>{{ removeSubstring(item.name, '_M') }} - ${{ item.price }}</p>
               <!-- Additional item details here -->
@@ -27,117 +28,125 @@
 </template>
 
 <script>
+import { ref, computed, onMounted, inject } from 'vue';
 import axios from 'axios';
+import LandingHeader from './LandingHeader.vue';
 
 const apiRedirect = "http://localhost:3000";
 
 export default {
-  data() {
-    return {
-      categories: [],
-      menuItems: {},
-      columns: 4, // determines how many columns there are
-      columnHeights: [],
-    };
-  },
-  computed: {
-    validCategories() {
-      return this.categories.filter(category => category !== "what's new" && category !== "merchandise");
-    },
-    groupedCategories() {
-      const result = [];
-      const categories = [...this.validCategories];
-      console.log(categories.length);
-      const columnAmount = Math.floor(categories.length / 4);
-      console.log(columnAmount);
-      const remaining = categories.length - (columnAmount * 4);
-      for(let i = 0; i < 4; i++){ 
-        if(remaining > i){
-          result.push(categories.splice(0, columnAmount+1));
+    setup() {
+      const globalData = inject('globalTextMod');
+      const categories = ref([]);
+      const menuItems = ref({});
+      const columns = 4;
+      const columnHeights = ref([]);
+      const validCategories = computed(() => categories.value.filter(category => category !== "what's new" && category !== "merchandise"));
+      const groupedCategories = computed(() => {
+          const result = [];
+          const cats = [...validCategories.value];
+          const columnAmount = Math.floor(cats.length / columns);
+          const remaining = cats.length - (columnAmount * columns);
+          for (let i = 0; i < columns; i++) {
+              if (remaining > i) {
+                  result.push(cats.splice(0, columnAmount + 1));
+              }
+              else {
+                  result.push(cats.splice(0, columnAmount));
+              }
+          }
+          return result;
+      });
+
+      const titleFontMod = computed(() => {
+        const textSize = 24;
+        return `${textSize * globalData.textMod}px`;
+      });
+
+      const itemFontMod = computed(() => {
+        const textSize = 15;
+        return `${textSize * globalData.textMod}px`;
+      });
+
+      const filteredItems = computed(() => {
+            const filtered = {};
+            for (const category in menuItems.value) {
+                filtered[category] = menuItems.value[category].filter(item => !item.name.endsWith('_L'));
+            }
+            return filtered;
+        });
+        function removeSubstring(str, substr) {
+            return str.replace(substr, '');
         }
-        else{
-          result.push(categories.splice(0, columnAmount));
+        function capitalize(str) {
+            return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         }
-      }
-      
-      return result;
-    },
-    filteredItems() {
-      // Filter items based on the condition
-      const filtered = {};
-      for (const category in this.menuItems) {
-        filtered[category] = this.menuItems[category].filter(item => !item.name.endsWith('_L'));
-      }
-      return filtered;
-    },
-  },
-  methods: {
-    removeSubstring(str, substr) {
-      return str.replace(substr, '');
-    },
-    capitalize(str) {
-      return str
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    },
-    getCategoryStyles(category) {
-      // Calculate height based on the number of items in each category
-      return {
-        border: `1px solid #ccc`,
-        borderRadius: '5px',
-        padding: '20px', // Fixed padding
-        marginBottom: '20px',
-        width: `100%`, // Width calculation based on the number of columns
-        boxSizing: 'border-box',
-        height: 'min-content',
-      };
-    },
-    getColumnHeights() {
-      this.columnHeights = []; // Reset heights
-      for (const group of this.groupedCategories) {
-        let height = 0;
-        for (const category of group) {
-          const itemLength = this.filteredItems[category]?.length || 0;
-          height += itemLength > 0 ? itemLength * 35 + 74 : 0;
+        function getCategoryStyles(category) {
+            return {
+                border: `1px solid #ccc`,
+                borderRadius: '5px',
+                padding: '20px',
+                marginBottom: '20px',
+                width: `100%`,
+                boxSizing: 'border-box',
+                height: 'min-content',
+            };
         }
-        this.columnHeights.push(height);
-      }
-      this.addRemainderCategories();
-    },
-    addRemainderCategories() {
-      const minHeight = Math.min(...this.columnHeights);
-      const shortestColumnIndex = this.columnHeights.indexOf(minHeight);
-
-      const remainderCategories = this.validCategories.filter(
-        category => !this.groupedCategories.flat().includes(category)
-      );
-
-      while (remainderCategories.length > 0) {
-        this.groupedCategories[shortestColumnIndex].push(remainderCategories.shift());
-      }
-
-      this.getColumnHeights(); // Recalculate heights after adding remainder categories
-    },
-  },
-
-  async mounted() {
-    try {
-      const categoriesResponse = await axios.get(apiRedirect + '/menu-items/category');
-      this.categories = categoriesResponse.data.map(category => category.category);
-
-      for (const category of this.categories) {
-        if (category !== "what's new" && category !== "merchandise") {
-          const fixedCategory = category.toLowerCase().replace(' ', '-');
-          const itemsResponse = await axios.get(apiRedirect + `/menu-items/${fixedCategory}`);
-          this.menuItems[category] = itemsResponse.data;
+        function getColumnHeights() {
+            columnHeights.value = [];
+            for (const group of groupedCategories.value) {
+                let height = 0;
+                for (const category of group) {
+                    const itemLength = filteredItems.value[category]?.length || 0;
+                    height += itemLength > 0 ? itemLength * 35 + 74 : 0;
+                }
+                columnHeights.value.push(height);
+            }
+            addRemainderCategories();
         }
-      }
-      //this.getColumnHeights();
-    } catch (error) {
-      console.error(error);
-    }
-  },
+        function addRemainderCategories() {
+            const minHeight = Math.min(...columnHeights.value);
+            const shortestColumnIndex = columnHeights.value.indexOf(minHeight);
+            const remainderCategories = validCategories.value.filter(category => !groupedCategories.value.flat().includes(category));
+            while (remainderCategories.length > 0) {
+                groupedCategories.value[shortestColumnIndex].push(remainderCategories.shift());
+            }
+            getColumnHeights();
+        }
+        onMounted(async () => {
+            try {
+                const categoriesResponse = await axios.get(apiRedirect + '/menu-items/category');
+                categories.value = categoriesResponse.data.map(category => category.category);
+                for (const category of categories.value) {
+                    if (category !== "what's new" && category !== "merchandise") {
+                        const fixedCategory = category.toLowerCase().replace(' ', '-');
+                        const itemsResponse = await axios.get(apiRedirect + `/menu-items/${fixedCategory}`);
+                        menuItems.value[category] = itemsResponse.data;
+                    }
+                }
+            }
+            catch (error) {
+                console.error(error);
+            }
+        });
+        return {
+            categories,
+            menuItems,
+            columns,
+            columnHeights,
+            validCategories,
+            groupedCategories,
+            filteredItems,
+            removeSubstring,
+            capitalize,
+            getCategoryStyles,
+            getColumnHeights,
+            addRemainderCategories,
+            titleFontMod,
+            itemFontMod,
+        };
+    },
+    components: { LandingHeader }
 };
 </script>
 
@@ -145,6 +154,7 @@ export default {
 .menu {
   width: 95vw; /* Set a maximum width for the menu */
   height: 80vh;
+  padding-top: 10%;
   top: 20vh;
   left: 0;
 }
