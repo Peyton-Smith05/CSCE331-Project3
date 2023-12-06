@@ -1,7 +1,9 @@
 <template>
     <div class="checkout-container">
-      <button @click="translateES()">TRANSLATEtoES</button>
-      <button @click="originalValue()">TRANSLATEtoEN</button>
+      <button @click="toggle()" id="toggle_button">
+        <span v-if="isActive" class="toggle__label">modo español</span>
+        <span v-if="! isActive" class="toggle__label">English mode</span>
+      </button>
       <h1>{{checkoutDetails[0]}}</h1>
       <div class="cart-items">
         <h2>{{checkoutDetails[1]}}</h2>
@@ -43,6 +45,7 @@ export default {
   },
   data() {
     return {
+      currentState: false,
       checkoutDetails: ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"],
       cartItems: [], 
       tip: 0,
@@ -63,6 +66,16 @@ export default {
     },
   },
   methods: {
+    toggle() {
+      if (this.currentState == true) {
+        this.currentState = false;
+        this.originalValue()
+      } else {
+        this.currentState = true;
+        this.translateES()
+        
+      }
+    },
     confirmOrder() {
       // Logic to send order details to backend API
       console.log('Order confirmed with details:', this.cartItems, this.total, this.selectedPickupTime);
@@ -80,12 +93,8 @@ export default {
         console.error(error);
       }
     },
-    async originalValue() {
-      try {
-        checkoutDetails = ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"]
-      } catch (error) {
-        console.error(error);
-      }
+    originalValue() {
+      this.checkoutDetails = ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"]
     },
   },
 };
