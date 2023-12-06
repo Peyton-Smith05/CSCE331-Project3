@@ -1,8 +1,10 @@
 <template>
     <div class="checkout-container">
-      <h1>Checkout</h1>
+      <button @click="translateES()">TRANSLATEtoES</button>
+      <button @click="originalValue()">TRANSLATEtoEN</button>
+      <h1>{{checkoutDetails[0]}}</h1>
       <div class="cart-items">
-        <h2>Your Cart</h2>
+        <h2>{{checkoutDetails[1]}}</h2>
         <ul>
           <li v-for="item in cartItems" :key="item.id">
             {{ item.name }} - ${{ item.price }} x {{ item.quantity }}
@@ -10,24 +12,27 @@
         </ul>
       </div>
       <div class="cost-details">
-        <p>Subtotal: ${{ subtotal }}</p>
-        <p>Tax: ${{ tax }}</p>
-        <p>Total: ${{ total }}</p>
-        <label for="tip">Tip:</label>
+        <p>{{checkoutDetails[2]}}: ${{ subtotal }}</p>
+        <p>{{checkoutDetails[3]}}: ${{ tax }}</p>
+        <p>{{checkoutDetails[4]}}: ${{ total }}</p>
+        <label for="tip">{{checkoutDetails[5]}}:</label>
         <input type="number" id="tip" v-model="tip" placeholder="Enter tip amount"/>
       </div>
       <div class="pickup-time">
-        <label for="pickup-time">Pickup Time:</label>
+        <label for="pickup-time">{{checkoutDetails[6]}}:</label>
         <select id="pickup-time" v-model="selectedPickupTime">
-          <option disabled value="">Please select one</option>
+          <option disabled value="">{{checkoutDetails[7]}}</option>
           <option v-for="time in pickupTimes" :key="time" :value="time">{{ time }}</option>
         </select>
       </div>
-      <button @click="confirmOrder">Confirm Order</button>
+      <button @click="confirmOrder">{{checkoutDetails[8]}}</button>
     </div>
   </template>
 
 <script>
+
+const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+import axios from 'axios';
 export default {
 
 
@@ -38,6 +43,7 @@ export default {
   },
   data() {
     return {
+      checkoutDetails: ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"],
       cartItems: [], 
       tip: 0,
       selectedPickupTime: '',
@@ -61,6 +67,25 @@ export default {
       // Logic to send order details to backend API
       console.log('Order confirmed with details:', this.cartItems, this.total, this.selectedPickupTime);
       // Implement API call here
+    },
+    async translateES() {
+      try {
+        for (let i = 0; i < this.checkoutDetails.length; i++) {
+          const translate_query = apiRedirect + "/translate/" + this.checkoutDetails[i];
+          const response = await axios.get(translate_query);
+          this.checkoutDetails[i] = response.data;
+          console.log(response.data)
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async originalValue() {
+      try {
+        checkoutDetails = ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"]
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 };

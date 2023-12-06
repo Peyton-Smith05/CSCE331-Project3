@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google-cloud/translate": "^8.0.2",
     "@syncfusion/ej2-vue-calendars": "^23.2.6",
     "axios": "^1.6.0",
     "chart.js": "^4.4.0",

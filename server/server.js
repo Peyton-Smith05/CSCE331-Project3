@@ -309,6 +309,45 @@ app.get("/manager/sales-report-hour/:start_date_time/:end_date_time", async(req,
   }
 })
 
+app.get("/translate/:text", async(req, res) => {
+  try {
+    result = await translateText(req.params.text, 'es');
+    res.json(result[0]);
+
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+app.get("/translateEnglish/:text", async(req, res) => {
+  try {
+    result = await translateText(req.params.text, 'en');
+    res.json(result[0]);
+
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+const {Translate} = require('@google-cloud/translate').v2
+
+const CREDENTIALS = JSON.parse(process.env.CREDENTIALS);
+
+const translate = new Translate({
+  credentials: CREDENTIALS,
+  projectId: CREDENTIALS.project_id
+})
+
+const translateText = async (text, targetLanguage) =>  {
+  try {
+    let response = await translate.translate(text, targetLanguage);
+    return response;
+  } catch (error) {
+    console.log('error at translateText' + error);
+    return 0;
+  }
+}
+
 // Define the port
 const PORT = 3000;
 

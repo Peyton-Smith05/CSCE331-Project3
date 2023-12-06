@@ -26,7 +26,7 @@ const routes = [
         path: '/menuitems', 
         name: 'MenuItems',
         component: MenuItems,
-        props: (route) => ({ propName: route.query.filteredMenuItems })
+        
       },
       {
         path: '/toppings', 

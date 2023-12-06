@@ -15,15 +15,26 @@
 </template> -->
 <template>
   <div class="menu-items-wrapper">
+    
     <div class="menu-items-grid">
       <div class="grid-container">
         <div class="grid-item" v-for="menuItem in filteredMenuItems" :key="menuItem.id">
-          <img src="./assets/Tea_Tab.png" alt="Tea Image" class="menu-item-image"/>
+          <!-- <img src="./assets/Tea_Tab.png" alt="Tea Image" class="menu-item-image"/> -->
+          <img v-if="menuItem.category === 1" src="./assets/menu_images/whats new.png" alt="Tea Image" class="menu-item-image"/>
+          <img v-if="menuItem.category === 2" src="./assets/menu_images/milk tea.png" alt="Tea Image" class="menu-item-image"/>
+          <img v-if="menuItem.category === 3" src="./assets/menu_images/merchandise.png" alt="Tea Image" class="menu-item-image"/>
+          <img v-if="menuItem.category === 4" src="./assets/menu_images/slush.png" alt="Tea Image" class="menu-item-image"/>
+          <img v-if="menuItem.category === 5" src="./assets/menu_images/classic.png" alt="Tea Image" class="menu-item-image"/>
+          <img v-if="menuItem.category === 6" src="./assets/menu_images/milk cap.png" alt="Tea Image" class="menu-item-image"/>
+          <img v-if="menuItem.category === 7" src="./assets/menu_images/yogurt.png" alt="Tea Image" class="menu-item-image"/>
+          <img v-if="menuItem.category === 8" src="./assets/menu_images/espresso.png" alt="Tea Image" class="menu-item-image"/>
+          <img v-if="menuItem.category === 9" src="./assets/menu_images/milk strike.png" alt="Tea Image" class="menu-item-image"/>
+          <img v-if="menuItem.category === 10" src="./assets/menu_images/punch.png" alt="Tea Image" class="menu-item-image"/>
           <div class="menu-item-details">
-            <h4>{{ menuItem.name }}</h4>
+            <h3>{{ menuItem.name }}</h3>
             <p>${{ menuItem.price }}</p>
           </div>
-          <button @click="redirectToToppings(menuItem)">Add to Order</button>
+          <button @click="redirectToToppings(menuItem)">{{addToOrder}}</button>
         </div>
       </div>
     </div>
@@ -32,11 +43,22 @@
 
 
 <script>
+import axios from 'axios'
+const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 export default {
+  data() {    
+    return {
+      category: []
+    }
+  },
   props: {
     filteredMenuItems: {
       type: Array,
       default: () => [],
+    },
+    addToOrder: {
+      type: String,
+      default: () => "Add To Order",
     },
   },
   methods: {
@@ -45,6 +67,11 @@ export default {
       this.$router.push({ name: 'Toppings', params: { } });
     },
   },
+  watch: {
+    filteredMenuItems: function(newVal) { 
+        this.category = newVal
+    }
+  }
 };
 </script>
 
