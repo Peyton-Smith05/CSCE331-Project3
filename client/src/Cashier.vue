@@ -70,6 +70,7 @@ import { ref, onMounted } from 'vue'
 export default {
   data() {
     return {
+      empid: 1,
       currentState: false,
       options: ["Order Details", "Size", "Temperature", "Sugar Level", "Ice Level", "Toppings", "Done"],
       optionDetails: ['Medium', 'Large', 'Hot', 'Cold', 'None', 'Less', 'Regular'],
@@ -213,27 +214,7 @@ export default {
       }
 
     },
-    created() {
-      const category_api = apiRedirect + "/menu-items/category";
-      this.fetchCategory(category_api);
-          // Call the second fetchData function or any other operations that depend on categories here
-      const menuItems_api = apiRedirect + "/menu-items";
-      this.fetchMenuItems(menuItems_api)
-        .then(() => {
-          this.filterByCategory(0); // After fetching menu items, apply filtering
-        });
-      // this.empid = JSON.parse(this.$route.query.empid);
-    },
-    methods: {
-      async fetchCategory(whatToFetch) {
-        try {
-          const response = await axios.get(whatToFetch);
-          this.respond = response.data;
-        } catch (error) {
-          console.error(error);
-          this.error = 'Failed to load users.';
-        }
-      },
+    
       async fetchMenuItems(whatToFetch) {
           try {
             const response = await axios.get(whatToFetch);
@@ -405,7 +386,7 @@ export default {
         return this.orderedItems.length > 0;
     },
   }
-}};
+};
 
 </script>
   

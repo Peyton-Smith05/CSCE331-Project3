@@ -1,8 +1,8 @@
 <template>
     <div class="checkout-container">
       <button @click="toggle()" id="toggle_button">
-        <span v-if="isActive" class="toggle__label">modo español</span>
-        <span v-if="! isActive" class="toggle__label">English mode</span>
+        <span v-if="isActive" class="toggle__label">Traducir</span>
+        <span v-if="! isActive" class="toggle__label">Translate</span>
       </button>
       <h1>{{checkoutDetails[0]}}</h1>
       <div class="cart-items">
@@ -45,7 +45,7 @@ export default {
       this.cartItems = JSON.parse(this.$route.query.cartItems);
       this.subtotal = parseFloat(JSON.parse(this.$route.query.total));
       this.tax = parseFloat(JSON.parse(this.$route.query.tax));
-      this.empid = parseInt(JSON.parse(this.$route.query.empid));
+      this.empid = 1
     }
   },
   data() {
@@ -82,12 +82,21 @@ export default {
         
       }
     },
-    confirmOrder() {
-      // Logic to send order details to backend API
-      console.log('Order confirmed with details:', this.cartItems, this.total, this.selectedPickupTime);
-      // Implement API call here
-
+    async confirmOrder() {
+      console.log("Submitting...");
+      // TODO: Fix time zone issue
+      const now = new Date();
+      const date = now.toISOString().split('T')[0];
+      const time = now.toISOString().split('T')[1];
+      try {
+        const response = await axios.post(apiRedirect + '/submit-order', { drinks: this.cartItems, total: this.total, tip: this.tip, empid: this.empid, date: date, time: time });
+        console.log(response.data);
+        this.$router.push('/');
+      } catch (error) {
+        console.error(error);
+      }
     },
+  
     async translateES() {
       try {
         for (let i = 0; i < this.checkoutDetails.length; i++) {
