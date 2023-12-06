@@ -1,12 +1,14 @@
 <template>
-    <nav class="top-ribbon-overlay">
-        <button v-if="showInventory" @click="changeState()" class="see-inventory-btn"> See Inventory</button>
-        <button v-if="showSales" @click="changeState()" class="see-sales-btn"> See Sales</button>
-    </nav>
-    <div class="manager-inner">
-        <InventoryTable v-if="showSales"/>
-        <SalesChart v-if="showInventory"/>
-    </div>
+    <main>
+        <nav class="top-ribbon-overlay">
+            <button v-if="showInventory" @click="changeState()" class="see-inventory-btn"> See Inventory</button>
+            <button v-if="showSales" @click="changeState()" class="see-sales-btn"> See Sales</button>
+        </nav>
+        <div class="manager-inner">
+            <InventoryTable v-if="showSales"/>
+            <SalesChart v-if="showInventory"/>
+        </div>
+    </main>
 </template>
 
 <script>
@@ -65,6 +67,8 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+
+        background-color: rgb(255, 236, 220)
     }
 
 </style>

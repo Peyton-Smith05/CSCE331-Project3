@@ -173,7 +173,6 @@ app.get('/menu-items/toppings', async (req, res) => {
 // ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
 app.get("/login/info/:email", async (req, res) => {
   try {
-    console.log("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'")
     const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
     res.json(rows);
   } catch (err) {
@@ -290,22 +289,36 @@ app.get("/manager/inventory_requests", async (req, res) => {
   }
 })
 
-app.get("/manager/sales-report-day/:start_date/:end_date", async(req, res) => {
-  
-  try{
-    console.log("Checking validity of dates.")
+app.post("/manager/api/orders_data", async (req, res) => {
+  const { datesSelected } = req.body;
+  // Casting all passed dates to Date datatype.
+  casted_dates = [];
+  datesSelected.forEach((element) => {
+    let casted_element = new Date(element);
+    casted_dates.push("\'" + 
+      casted_element.getFullYear() + "-" +
+       (casted_element.getMonth() + 1).toString().padStart(2, '0') + "-" + 
+       casted_element.getDate().toString().padStart(2, '0')
+       + "\'");
+  });
+
+  // Creating SQL Query
+  const getDateSalesQuery = "SELECT total FROM order_log WHERE date=";
+  try {
+    var result = [];
+    for(let i = 0; i < casted_dates.length; i++) {
+      let response = await pool.query(
+        getDateSalesQuery + casted_dates[i]
+        );
+      result.push({
+        dataDate: casted_dates[i],
+        data: response,
+      });
+    }
+    res.json({ result });
   } catch(err) {
     console.error(err.message);
-    res.status(500).json('Server Error');
-  }
-})
-
-app.get("/manager/sales-report-hour/:start_date_time/:end_date_time", async(req, res) => {
-  try{
-
-  } catch(err) {
-    console.error(err.message);
-    res.status(500).json('Server Error');
+      res.status(500).json('Server Error');
   }
 })
 
