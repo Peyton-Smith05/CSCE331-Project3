@@ -171,15 +171,10 @@ app.get('/menu-items/toppings', async (req, res) => {
 });
 
 // ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
-app.get("/login/info/:email/:pswd", async (req, res) => {
+app.get("/login/info/:email", async (req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\' AND password = \'" + req.params.pswd + "\'");
-    if (rows.length == 0) {
-      res.status(404).json('Could not find user');
-    }
-    else {
-      res.json(rows);
-    }
+    const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
+    res.json(rows);
   } catch (err) {
     console.error(err.message);
     res.status(404).json('Could not find user');
