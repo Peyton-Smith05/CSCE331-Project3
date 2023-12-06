@@ -1,5 +1,6 @@
 <template>
     <main>
+        <TopRibbonTab/>
         <nav class="top-ribbon-overlay">
             <button v-if="showInventory" @click="changeState()" class="see-inventory-btn"> See Inventory</button>
             <button v-if="showSales" @click="changeState()" class="see-sales-btn"> See Sales</button>
@@ -14,6 +15,7 @@
 <script>
     import InventoryTable from './components/InventoryTable.vue';
     import SalesChart from './components/SalesChart.vue';
+    import TopRibbonTab from './TopRibbonTab.vue';
 
     export default {
         data() {    
@@ -23,6 +25,7 @@
             }
         },
         components: {
+            TopRibbonTab,
             InventoryTable,
             SalesChart,
         },
