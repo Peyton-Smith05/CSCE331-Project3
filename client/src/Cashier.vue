@@ -224,7 +224,7 @@
       menuItems() {
         return this.removeDuplicates(this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
         const matchingCategory = this.categories.find(category => category.name === item.category);
-        const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
+        const categoryId = matchingCategory ? matchingCategory.id : 0; 
         return {
           id: index + 1,
           name: this.cleanItemName(item.name),
