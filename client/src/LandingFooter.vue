@@ -2,7 +2,7 @@
   <footer>
     <div class="weather-input">
       <input type="text" placeholder="Enter location" class="rounded-textbox" v-model="location"/>
-      <button @click="getWeather" class="weather-button">Get Weather</button>
+      <button :style="{ fontSize: buttonFontSize }" @click="getWeather" class="weather-button">Get Weather</button>
       <p v-if="weatherInfo">Weather: {{ weatherInfo.weather[0].main }}, Temperature: {{ weatherInfo.main.temp }} F, Feels Like: {{ weatherInfo.main.feels_like }} F </p>
     </div>
   </footer>
@@ -10,23 +10,41 @@
 
 <script>
 import axios from 'axios';
+import { inject, ref, computed } from 'vue';
 
 export default {
   name: 'Footer',
-  data() {
-    return {
-      weatherInfo: '',
-      location: '',
-    }
-  },
-  methods: {
-    async getWeather() {
-      const request = 'https://api.openweathermap.org/data/2.5/weather?q=' + this.location + '&appid=cb79dd33fa3e6a684d5325a7c31b1e4b&units=imperial';
+  setup() {
+    // Inject the global variable 'globalTextMod'
+    const globalData = inject('globalTextMod');
+
+    // Define reactive variables using ref
+    const weatherInfo = ref('');
+    const location = ref('');
+
+    // Define methods
+    async function getWeather() {
+      const request = `https://api.openweathermap.org/data/2.5/weather?q=${location.value}&appid=cb79dd33fa3e6a684d5325a7c31b1e4b&units=imperial`;
       const response = await axios.get(request);
-      this.weatherInfo = response.data;
+      weatherInfo.value = response.data;
     }
-  }
-}
+
+    // Define computed properties
+    const buttonFontSize = computed(() => {
+      const textSize = 13;
+      const tSize = globalData ? globalData.textMod : 1;
+      return `${textSize * tSize}px`;
+    });
+
+    // Return values to be used in the template
+    return {
+      weatherInfo,
+      location,
+      getWeather,
+      buttonFontSize,
+    };
+  },
+};
 </script>
 
 <style scoped>
