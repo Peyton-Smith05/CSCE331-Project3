@@ -1,16 +1,22 @@
 <template>
-    <div class="top-ribbon-tab" v-show="$route.path !== '/login'">
-      <router-link to="/login">
-        <button @click="goToLoginInterface()">Go to Cashier</button>
+  <div class="top-ribbon-tab" v-show="$route.path !== '/login' || $route.path !=='/manager'">
+    <router-link to="/login">
+      <button @click="goToLoginInterface()">Order Now</button>
+    </router-link>
+    <router-link to="/menu">
+        <button @click="goToMenu()">View</button>
       </router-link>
-    </div>
-  </template>
+  </div>
+</template>
   
   <script>
   export default {
     methods: {
       goToLoginInterface() {
         this.$router.push('/login');
+      },
+      goToMenu() {
+        this.$router.push('/menu');
       },
       goToCashierInterface() {
         // Navigate to the cashier interface page using Vue Router
@@ -36,7 +42,7 @@
   }
   
   .top-ribbon-tab button {
-    background-color: #007bff;
+    background-color: #ff0000;
     color: #fff;
     border: none;
     padding: 10px 20px;

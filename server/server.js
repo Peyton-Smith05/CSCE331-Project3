@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const app = express();
 const path = __dirname + "/../client/dist/";
+const category = "what's-new";
+const encodedCategory = encodeURIComponent(category);
 
 history({
   index: 'index.htmp'
@@ -29,15 +31,6 @@ const pool = new Pool({
     ssl: {rejectUnauthorized: false}
 });
 
-app.get('/api/menu-items', async (req, res) => {
-  try {
-    const { rows } = await pool.query('SELECT * FROM menu');
-    res.json(rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json('Server error');
-  }
-});
 
 // API endpoint to get topping menu items
 app.get('/menu-items/topping', async (req, res) => {
@@ -65,6 +58,18 @@ app.get('/menu-items/classic', async (req, res) => {
 app.get('/menu-items/espresso', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'espresso\'');
+    res.json(rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json('Server error');
+  }
+});
+
+//console.log('/menu-items/' + category);
+app.get('/menu-items/what\'s-new', async (req, res) => {
+  try {
+    const queryText = 'SELECT * FROM menu WHERE category = $1';
+    const { rows } = await pool.query(queryText, [category]);
     res.json(rows);
   } catch (err) {
     console.error(err.message);
@@ -140,10 +145,14 @@ app.get('/menu-items/milk-strike', async (req, res) => {
 
 // API endpoint to get menu categories
 app.get('/menu-items/category', async (req, res) => {
+  console.log("Happening");
   try {
+    console.log("Category Request");
     const { rows } = await pool.query('SELECT DISTINCT category FROM menu');
     res.json(rows);
+    console.log("Finished Category Request");
   } catch (err) {
+    console.log("Error");
     console.error(err.message);
     res.status(500).json('Server error');
   }
@@ -167,6 +176,55 @@ app.get('/menu-items/toppings', async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json('Server error');
+  }
+});
+
+async function getNextIds() {
+  // Query for the maximum orderid
+  const orderRes = await pool.query('SELECT MAX(orderid) as maxorderid FROM order_log');
+  const maxOrderId = orderRes.rows[0].maxorderid;
+
+  // Query for the maximum toppingid
+  const toppingRes = await pool.query('SELECT MAX(toppingid) as maxtoppingid FROM topping');
+  const maxToppingId = toppingRes.rows[0].maxtoppingid;
+
+  const drinkres = await pool.query('SELECT MAX(drinkid) as maxdrinkid FROM drink');
+  const maxDrinkId = drinkres.rows[0].maxdrinkid;
+
+  return {
+    nextOrderId: maxOrderId + 1,
+    nextDrinkId: maxDrinkId + 1,
+    nextToppingId: maxToppingId + 1
+  };
+}
+
+// Endpoint to submit an order
+app.post('/submit-order', async (req, res) => {
+  const { drinks, total, tip, empid, date, time } = req.body;
+  const ids = await getNextIds();
+  try {
+    await pool.query('BEGIN');
+    const orderQuery = 'INSERT INTO order_log (orderid, empid, date, time, total, tip) VALUES ($1, $2, $3, $4, $5, $6)';
+    await pool.query(orderQuery, [ids.nextOrderId, empid, date, time, total, tip]);
+
+    for (const drink of drinks) {
+      const drinkQuery = 'INSERT INTO drink (drinkid, orderid, name, category, size, temp, ice_level, sugar_level, price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
+      await pool.query(drinkQuery, [ids.nextDrinkId, ids.nextOrderId, drink.name, drink.categoryString, drink.size, drink.temp, drink.iceLevel, drink.sugarLevel, drink.price]);
+
+      for (const topping of drink.toppings) {
+        const toppingQuery = 'INSERT INTO topping (toppingid, drinkid, name, quantity, price) VALUES ($1, $2, $3, $4, $5)';
+        await pool.query(toppingQuery, [ids.nextToppingId, drink.itemID, topping.name, topping.quantity, topping.price]);
+        ids.nextToppingId++;
+      }
+      ids.nextDrinkId++;
+    }
+
+    await pool.query('COMMIT');
+    res.status(200).send('Order submitted successfully');
+  } catch (error) {
+    console.log(error);
+    await pool.query('ROLLBACK');
+    res.status(500).send('Error submitting order');
   }
 });
 
@@ -198,6 +256,7 @@ app.get("/login/info/google/:email", async (req, res) => {
 })
 
 // ======= MANAGER API REQUESTS FOR INVENTORY INFORMATION ==========
+
 app.get("/manager/inventory", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM inventory");

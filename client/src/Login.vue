@@ -55,6 +55,7 @@ export default {
                     console.error(error);
                 })
             },
+            empid: 0,
             email: '',
             pswd:  '',
             popupError: false,
@@ -72,7 +73,8 @@ export default {
                 if(user_info.password !== this.pswd) {throw new Error("Invalid Password was provided");}
                 // Start routing to customer, cashier, and manager.
                 if(user_info.title == "Cashier") {
-                    this.goToCashier();
+                    this.empid = user_info.empid;
+                    this.goToCashier(user_info.empid);
                 } else if(user_info.title == "Manager") {
                     this.goToManager();
                 }
@@ -109,7 +111,30 @@ export default {
         
         goToCashier() {
             // Navigate to the cashier interface page using Vue Router
-            this.$router.push('/cashier');
+            this.$router.push({
+                name: 'Cashier',
+                query: {
+                    empid: JSON.stringify(this.empid),
+                }
+            });
+        },
+        goToCustomer() {
+            this.$router.push({
+                name: 'Customer',
+                query: {
+                    empid: JSON.stringify(0),
+                }
+            });
+        },
+        goToManager(empid) {
+            // TODO create rerouting to manager site.
+            console.log("Rerouting to manager side");
+            this.$router.push({
+                name: 'Manager',
+                query: {
+                    empid: JSON.stringify(empid),
+                }
+            });
         },
         goToCustomer() {
             this.$router.push('/customer');

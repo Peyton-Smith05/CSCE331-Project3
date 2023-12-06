@@ -14,11 +14,7 @@
     <div class="ordered-items-wrapper">
       <div class="ordered-items">
         <h3>Ordered Items</h3>
-        <div class="total">
-          Items: ${{ itemCost }}<br>
-          Tax: ${{ parseFloat(taxCost).toFixed(2) }}<br>
-          Total: ${{ parseFloat(totalCost).toFixed(2) }}
-        </div>
+       
         <ul>
           <li v-for="orderItem in orderedItems" :key="orderItem.id">
             <div>
@@ -46,6 +42,7 @@
           Items: ${{ itemCost }}<br>
           Tax: ${{ taxCost }}<br>
           Total: ${{ totalCost }}
+          <button></button>
         </div>
       </div>
     </div>
@@ -91,6 +88,7 @@
         .then(() => {
           this.filterByCategory(0); // After fetching menu items, apply filtering
         });
+      this.empid = JSON.parse(this.$route.query.empid);
     },
     methods: {
       async fetchCategory(whatToFetch) {
@@ -226,7 +224,7 @@
       menuItems() {
         return this.removeDuplicates(this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
         const matchingCategory = this.categories.find(category => category.name === item.category);
-        const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
+        const categoryId = matchingCategory ? matchingCategory.id : 0; 
         return {
           id: index + 1,
           name: this.cleanItemName(item.name),
@@ -254,14 +252,14 @@
   .cashier-interface {
     display: flex;
     width: 90vw;
-    height: 90vh;
+    height: 100vh;
     position: absolute;
-    top: 10vh;
+    top: 0vh;
     left: 10vw;
   }
   .menu-items {
     overflow: auto;
-    width: 45vw;
+    width: 45%;
   }
   .ordered-items {
     padding: 20px 0; 
@@ -303,9 +301,8 @@
     position: fixed;
     top: 0;
     left: 0;
-    height: 90vh;
-    width: 10vw;
-    top: 10vh;
+    height: 100vh;
+    width: 15%;
     background-color: #ccc;
     padding: 20px;
   }
