@@ -2,30 +2,30 @@
     <div class="topping-interface">
       <div class="exit-button" @click="closeToppingInterface">X</div>
       <div class="topping-options">
-        <h2>Select Toppings</h2>
+        <h2>{{options[0]}}</h2>
   
         <!-- Size Category -->
         <div class="topping-category">
-          <h3>Size</h3>
-          <div v-for="option in sizeOptions" :key="option">
+          <h3>{{options[1]}}</h3>
+          <div v-for="(option, index) in sizeOptions" :key="option">
             <input type="radio" :id="option" :value="option" v-model="selectedSize">
-            <label :for="option">{{ option }}</label>
+            <label :for="option">{{ optionDetails[index] }}</label>
           </div>
         </div>
   
         <!-- Temperature Category -->
         <div class="topping-category">
-          <h3>Temperature</h3>
-          <div v-for="option in temperatureOptions" :key="option">
+          <h3>{{options[2]}}</h3>
+          <div v-for="(option, index) in temperatureOptions" :key="option">
             <input type="radio" :id="option" :value="option" v-model="selectedTemperature">
-            <label :for="option">{{ option }}</label>
+            <label :for="option">{{ optionDetails[index+2] }}</label>
           </div>
         </div>
   
         <!-- Sugar Level Category -->
         <div class="topping-category">
-          <h3>Sugar Level</h3>
-          <div v-for="option in sugarLevelOptions" :key="option">
+          <h3>{{options[3]}}</h3>
+          <div v-for="(option, index) in sugarLevelOptions" :key="option">
             <input type="radio" :id="option" :value="option" v-model="selectedSugarLevel">
             <label :for="option">{{ option }}</label>
           </div>
@@ -33,16 +33,16 @@
   
         <!-- Ice Level Category -->
         <div class="topping-category">
-          <h3>Ice Level</h3>
-          <div v-for="option in iceLevelOptions" :key="option">
+          <h3>{{options[4]}}</h3>
+          <div v-for="(option, index) in iceLevelOptions" :key="option">
             <input type="radio" :id="option" :value="option" v-model="selectedIceLevel">
-            <label :for="option">{{ option }}</label>
+            <label :for="option">{{ optionDetails[index+4] }}</label>
           </div>
         </div>
   
         <!-- Toppings Category -->
         <div class="topping-category">
-          <h3>Toppings</h3>
+          <h3>{{options[5]}}</h3>
           <div v-for="option in toppingsOptions" :key="option.id">
             <input type="checkbox" :id="option.id" :value="option" v-model="selectedToppings">
             <label :for="option">{{ option.name }} - ${{ option.price }}</label>
@@ -50,7 +50,7 @@
         </div>
   
       </div>
-      <button class="done-button" @click="submitOrder">Done</button>
+      <button class="done-button" @click="submitOrder">{{options[6]}}</button>
     </div>
   </template>
   
@@ -73,6 +73,16 @@
         iceLevelOptions: ['None', 'Less', 'Regular'],
         toppings_menu: [],
       };
+    },
+    props: {
+      options: {
+        type: Array,
+        default: () => ["Order Details", "Size", "Temperature", "Sugar Level", "Ice Level", "Toppings", "Done"]
+      },
+      optionDetails: {
+        type: Array,
+        default: () => ['Medium', 'Large', 'Hot', 'Cold', 'None', 'Less', 'Regular'],
+      },
     },
     created(){
       const toppings_api = apiRedirect + "/menu-items/topping";

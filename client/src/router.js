@@ -28,10 +28,12 @@ const routes = [
         redirect: '/cashiermenuitems' 
       },
       {
+
         path: '/cashiermenuitems', 
         name: 'CashierMenuItems',
         component: CashierMenuItems,
         props: (route) => ({ propName: route.query.filteredMenuItems })
+
       },
       {
         path: '/cashiertoppings', 

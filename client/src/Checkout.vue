@@ -1,8 +1,12 @@
 <template>
     <div class="checkout-container">
-      <h1>Checkout</h1>
+      <button @click="toggle()" id="toggle_button">
+        <span v-if="isActive" class="toggle__label">modo español</span>
+        <span v-if="! isActive" class="toggle__label">English mode</span>
+      </button>
+      <h1>{{checkoutDetails[0]}}</h1>
       <div class="cart-items">
-        <h2>Your Cart</h2>
+        <h2>{{checkoutDetails[1]}}</h2>
         <ul>
           <li v-for="item in cartItems" :key="item.id">
             {{ item.name }} - ${{ item.price }} x {{ item.quantity }}
@@ -10,27 +14,30 @@
         </ul>
       </div>
       <div class="cost-details">
-        <p>Subtotal: ${{ subtotal }}</p>
-        <p>Tax: ${{ tax }}</p>
-        <p>Total: ${{ total }}</p>
-        <label for="tip">Tip:</label>
+        <p>{{checkoutDetails[2]}}: ${{ subtotal }}</p>
+        <p>{{checkoutDetails[3]}}: ${{ tax }}</p>
+        <p>{{checkoutDetails[4]}}: ${{ total }}</p>
+        <label for="tip">{{checkoutDetails[5]}}:</label>
         <input type="number" id="tip" v-model="tip" placeholder="Enter tip amount"/>
       </div>
       <div class="pickup-time">
-        <label for="pickup-time">Pickup Time:</label>
+        <label for="pickup-time">{{checkoutDetails[6]}}:</label>
         <select id="pickup-time" v-model="selectedPickupTime">
-          <option disabled value="">Please select one</option>
+          <option disabled value="">{{checkoutDetails[7]}}</option>
           <option v-for="time in pickupTimes" :key="time" :value="time">{{ time }}</option>
         </select>
       </div>
-      <button @click="submitOrder">Confirm Order</button>
+
+      <button @click="confirmOrder">{{checkoutDetails[8]}}</button>
+
     </div>
   </template>
 
 <script>
+
+const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
 import axios from 'axios';
 
-const apiRedirect = (window.location.href.slice(0, 17) == "http://localhost:") ? "http://localhost:3000" : "";
 
 export default {
   created() {
@@ -43,9 +50,14 @@ export default {
   },
   data() {
     return {
-      cartItems: [],
+
+      currentState: false,
+      checkoutDetails: ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"],
+      cartItems: [], 
+
       subtotal: 0.0,
       tax: 0.0, 
+
       tip: 0,
       empid: 0,
       selectedPickupTime: '',
@@ -59,19 +71,37 @@ export default {
     },
   },
   methods: {
-    async submitOrder() {
-      console.log("Submitting...");
-      // TODO: Fix time zone issue
-      const now = new Date();
-      const date = now.toISOString().split('T')[0];
-      const time = now.toISOString().split('T')[1];
+
+    toggle() {
+      if (this.currentState == true) {
+        this.currentState = false;
+        this.originalValue()
+      } else {
+        this.currentState = true;
+        this.translateES()
+        
+      }
+    },
+    confirmOrder() {
+      // Logic to send order details to backend API
+      console.log('Order confirmed with details:', this.cartItems, this.total, this.selectedPickupTime);
+      // Implement API call here
+
+    },
+    async translateES() {
       try {
-        const response = await axios.post(apiRedirect + '/submit-order', { drinks: this.cartItems, total: this.total, tip: this.tip, empid: this.empid, date: date, time: time });
-        console.log(response.data);
-        this.$router.push('/');
+        for (let i = 0; i < this.checkoutDetails.length; i++) {
+          const translate_query = apiRedirect + "/translate/" + this.checkoutDetails[i];
+          const response = await axios.get(translate_query);
+          this.checkoutDetails[i] = response.data;
+          console.log(response.data)
+        }
       } catch (error) {
         console.error(error);
       }
+    },
+    originalValue() {
+      this.checkoutDetails = ["Checkout", "Your Cart", "Subtotal", "Tax", "Total", "Tip", "Pickup Time", "Please select one", "Confirm Order"]
     },
   },
 };
