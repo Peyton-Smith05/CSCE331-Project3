@@ -222,7 +222,7 @@ export default {
         .then(() => {
           this.filterByCategory(0); // After fetching menu items, apply filtering
         });
-      this.empid = JSON.parse(this.$route.query.empid);
+      // this.empid = JSON.parse(this.$route.query.empid);
     },
     methods: {
       async fetchCategory(whatToFetch) {
