@@ -56,8 +56,8 @@
   
   <script>
   import axios from 'axios';
-
   const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+  
   export default {
     data() {
       return {
@@ -95,7 +95,8 @@
         this.$router.push({ name: 'CashierMenuItems', params: {} });
       },
       submitOrder() {
-        this.$emit('sendOrder', this.selectedSize, this.selectedTemperature, this.selectedSugarLevel, this.selectedIceLevel, this.selectedToppings);
+        let temp = parseInt(this.selectedSugarLevel.replace("%", ""));
+        this.$emit('sendOrder', this.selectedSize, this.selectedTemperature, temp, this.selectedIceLevel, this.selectedToppings);
         this.$router.push({ name: 'CashierMenuItems', params: {} });
       },
       // Add methods to handle selection and processing of toppings
