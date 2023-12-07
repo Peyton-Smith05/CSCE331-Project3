@@ -325,7 +325,7 @@ app.post("/manager/api/new-request", async (req, res) => {
   const insertReqQuery = "INSERT INTO inventory_requests (item_name, quantity, request_id) VALUES($1, $2, $3)"
   try {
     // Get new request_id from db.
-    let ReqIdResponse = await pool.query(ReqIdQuery);
+    let ReqIdResponse = await pool.query(reqIdQuery);
     // Variable contains the new, unique requestid.
     let newReqId = ReqIdResponse.rows[0].request_id + 1;
     
