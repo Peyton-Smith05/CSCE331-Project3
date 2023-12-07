@@ -102,7 +102,6 @@ export default {
     };
   },
   mounted() {
-    console.log('Heee');
     this.fetchData();
     this.$forceUpdate();
   },
