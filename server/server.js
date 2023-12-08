@@ -450,7 +450,7 @@ app.get("/api/manager/inventory_requests", async (req, res) => {
   }
 })
 
-app.post("/api/manager/api/orders_data", async (req, res) => {
+app.get("/api/manager/api/orders_data", async (req, res) => {
   const { datesSelected } = req.body;
   // Casting all passed dates to Date datatype.
   casted_dates = [];
