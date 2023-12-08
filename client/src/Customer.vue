@@ -219,8 +219,7 @@ export default {
         query: {
           cartItems: JSON.stringify(this.orderedItems),
           total: JSON.stringify(this.itemCost),
-          tax: JSON.stringify(this.taxCost),
-          empid: JSON.stringify(this.empid)
+          tax: JSON.stringify(this.taxCost)
         }
       });
     }

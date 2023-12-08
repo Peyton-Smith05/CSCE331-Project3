@@ -45,7 +45,7 @@ export default {
       this.cartItems = JSON.parse(this.$route.query.cartItems);
       this.subtotal = parseFloat(JSON.parse(this.$route.query.total));
       this.tax = parseFloat(JSON.parse(this.$route.query.tax));
-      this.empid = 1
+      this.empid = 1;
     }
   },
   data() {

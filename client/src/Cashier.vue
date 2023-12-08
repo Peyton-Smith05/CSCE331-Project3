@@ -102,7 +102,6 @@ export default {
     };
   },
   mounted() {
-    console.log('Heee');
     this.fetchData();
     this.$forceUpdate();
   },
@@ -333,7 +332,7 @@ export default {
         name: 'Checkout', 
         query: { 
           cartItems: JSON.stringify(this.orderedItems),
-          total: JSON.stringify(this.totalCost),
+          total: JSON.stringify(this.itemCost),
           tax: JSON.stringify(this.taxCost)
         },
     });
@@ -352,9 +351,16 @@ export default {
         }
     },
     itemCost() {
-      return this.orderedItems.reduce((acc, item) => {
-        return acc + item.price * item.quantity;
+      const total = this.orderedItems.reduce((acc, item) => {
+        let itemCost = item.price * item.quantity;
+        let toppingsCost = item.toppings.reduce((toppingAcc, topping) => {
+          return toppingAcc + (topping.price * topping.quantity);
+        }, 0);
+        itemCost += toppingsCost;
+        return acc + itemCost;
       }, 0);
+
+      return total.toFixed(2);
     },
     categories() {
       this.categoriesList = this.respond.filter(category => category.category !== "topping").map((category, index) => ({
@@ -369,7 +375,7 @@ export default {
     menuItems() {
       return this.removeDuplicates(this.respondItems.filter(item => item.category !== "topping").map((item, index) => {
       const matchingCategory = this.categories.find(category => category.name === item.category);
-      const categoryId = matchingCategory ? matchingCategory.id : 0; // Default to 0 if no matching category is found
+      const categoryId = matchingCategory ? matchingCategory.id : 0;
       return {
         id: index + 1,
         name: this.cleanItemName(item.name),
@@ -379,16 +385,12 @@ export default {
       };
     }))},
     taxCost() {
-      const tax = this.orderedItems.reduce((acc, item) => {
-        return (acc + item.price * item.quantity) * 0.07;
-      }, 0);
-      return tax.toFixed(2);
+      
+      return (this.itemCost * .07).toFixed(2);
     },
     totalCost() {
-      const total = this.orderedItems.reduce((acc, item) => {
-        return (acc + item.price * item.quantity) * 1.07;
-      }, 0);
-      return total.toFixed(2);
+
+      return parseFloat(this.itemCost) + parseFloat(this.taxCost);
     },
     isCartNotEmpty() {
         return this.orderedItems.length > 0;

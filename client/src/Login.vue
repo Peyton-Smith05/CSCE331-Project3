@@ -53,6 +53,7 @@ export default {
     TextSlider
   },
   setup() {
+    const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
     const router = useRouter()
     const globalData = inject('globalTextMod');
     const email = ref('');
@@ -87,20 +88,19 @@ export default {
         return `${textSize * globalData.textMod}px`;
     });
 
-    const handleGoogleOAuth = async () => {
+    const handleGoogleOAuth = async (res) => {
       try {
-        const google_login_query = `${apiRedirect}/login/info/${email.value}`;
+        const decoded_data = decodeCredential(res.credential);
+        const googleOAuthEmail = decoded_data.email; 
+
+        const google_login_query = apiRedirect + "/login/info/" + googleOAuthEmail;
         const response = await axios.get(google_login_query);
         const user_info = response.data[0];
 
         if (!user_info) {
           goToCustomer();
         }
-
-        if (pswd.value !== user_info.password) {
-          throw new Error('Invalid password');
-        }
-
+        
         if (user_info.title === 'Cashier') {
           goToCashier();
         } else if (user_info.title === 'Manager') {
