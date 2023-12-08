@@ -65,7 +65,7 @@ import axios from 'axios';
 import { ref, onMounted } from 'vue'
 
 
-  const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+  const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000/api" : "/api";
 
 export default {
   data() {

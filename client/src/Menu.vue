@@ -32,7 +32,7 @@ import { ref, computed, onMounted, inject } from 'vue';
 import axios from 'axios';
 import LandingHeader from './LandingHeader.vue';
 
-const apiRedirect = "http://localhost:3000";
+const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000/api" : "/api";
 
 export default {
     setup() {

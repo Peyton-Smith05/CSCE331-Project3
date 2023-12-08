@@ -35,7 +35,7 @@
 
 <script>
 
-const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000/api" : "/api";
 import axios from 'axios';
 
 

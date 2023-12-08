@@ -33,7 +33,7 @@ const pool = new Pool({
 
 
 // API endpoint to get topping menu items
-app.get('/menu-items/topping', async (req, res) => {
+app.get('/api/menu-items/topping', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'topping\'');
     res.json(rows);
@@ -44,7 +44,7 @@ app.get('/menu-items/topping', async (req, res) => {
 });
 
 // API endpoint to get classic menu items
-app.get('/menu-items/classic', async (req, res) => {
+app.get('/api/menu-items/classic', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'classic\'');
     res.json(rows);
@@ -55,7 +55,7 @@ app.get('/menu-items/classic', async (req, res) => {
 });
 
 // API endpoint to get espresso menu items
-app.get('/menu-items/espresso', async (req, res) => {
+app.get('/api/menu-items/espresso', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'espresso\'');
     res.json(rows);
@@ -66,7 +66,7 @@ app.get('/menu-items/espresso', async (req, res) => {
 });
 
 //console.log('/menu-items/' + category);
-app.get('/menu-items/what\'s-new', async (req, res) => {
+app.get('/api/menu-items/what\'s-new', async (req, res) => {
   try {
     const queryText = 'SELECT * FROM menu WHERE category = $1';
     const { rows } = await pool.query(queryText, [category]);
@@ -78,7 +78,7 @@ app.get('/menu-items/what\'s-new', async (req, res) => {
 });
 
 // API endpoint to get milk tea menu items
-app.get('/menu-items/milk-tea', async (req, res) => {
+app.get('/api/menu-items/milk-tea', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'milk tea\'');
     res.json(rows);
@@ -89,7 +89,7 @@ app.get('/menu-items/milk-tea', async (req, res) => {
 });
 
 // API endpoint to get slush menu items
-app.get('/menu-items/slush', async (req, res) => {
+app.get('/api/menu-items/slush', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'slush\'');
     res.json(rows);
@@ -100,7 +100,7 @@ app.get('/menu-items/slush', async (req, res) => {
 });
 
 // API endpoint to get yogurt menu items
-app.get('/menu-items/yogurt', async (req, res) => {
+app.get('/api/menu-items/yogurt', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'yogurt\'');
     res.json(rows);
@@ -111,7 +111,7 @@ app.get('/menu-items/yogurt', async (req, res) => {
 });
 
 // API endpoint to get milk cap menu items
-app.get('/menu-items/milk-cap', async (req, res) => {
+app.get('/api/menu-items/milk-cap', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'milk cap\'');
     res.json(rows);
@@ -122,7 +122,7 @@ app.get('/menu-items/milk-cap', async (req, res) => {
 });
 
 // API endpoint to get punch menu items
-app.get('/menu-items/punch', async (req, res) => {
+app.get('/api/menu-items/punch', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'punch\'');
     res.json(rows);
@@ -133,7 +133,7 @@ app.get('/menu-items/punch', async (req, res) => {
 });
 
 // API endpoint to get milk strike menu items
-app.get('/menu-items/milk-strike', async (req, res) => {
+app.get('/api/menu-items/milk-strike', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'milk strike\'');
     res.json(rows);
@@ -144,7 +144,7 @@ app.get('/menu-items/milk-strike', async (req, res) => {
 });
 
 // API endpoint to get menu categories
-app.get('/menu-items/category', async (req, res) => {
+app.get('/api/menu-items/category', async (req, res) => {
   console.log("Happening");
   try {
     console.log("Category Request");
@@ -159,17 +159,17 @@ app.get('/menu-items/category', async (req, res) => {
 });
 
 // API endpoint to get users
-app.get('/menu-items', async (req, res) => {
+app.get('/api/menu-items', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu');
     res.json(rows);
   } catch (err) {
-    console.error(err.message);
+    console.error(err.messa/apige);
     res.status(500).json('Server error');
   }
 });
 
-app.get('/menu-items/toppings', async (req, res) => {
+app.get('/api/menu-items/toppings', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM menu WHERE category = \'topping\'');
     res.json(rows);
@@ -199,7 +199,7 @@ async function getNextIds() {
 }
 
 // Endpoint to submit an order
-app.post('/submit-order', async (req, res) => {
+app.post('/api/submit-order', async (req, res) => {
   const { drinks, total, tip, empid, date, time } = req.body;
   const ids = await getNextIds();
   try {
@@ -229,7 +229,7 @@ app.post('/submit-order', async (req, res) => {
 });
 
 // ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
-app.get("/login/info/:email", async (req, res) => {
+app.get("/api/login/info/:email", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
     res.json(rows);
@@ -241,7 +241,7 @@ app.get("/login/info/:email", async (req, res) => {
 
 
 // Endpoint to submit an order
-app.post('/submit-order', async (req, res) => {
+app.post('/api/submit-order', async (req, res) => {
   const { drinks, total, tip, empid, date, time } = req.body;
   const ids = await getNextIds();
   try {
@@ -271,7 +271,7 @@ app.post('/submit-order', async (req, res) => {
 });
 
 // ======= LOGIN API REQUESTS FOR LOGIN INFORMATION ==========
-app.get("/login/info/:email", async (req, res) => {
+app.get("/api/login/info/:email", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
     res.json(rows);
@@ -282,7 +282,7 @@ app.get("/login/info/:email", async (req, res) => {
 })
 
 // This one uses google OAuth and the simple email to check what our data.
-app.get("/login/info/google/:email", async (req, res) => {
+app.get("/api/login/info/google/:email", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM employee WHERE email = \'" + req.params.email + "\'");
     if(rows.length == 0) {
@@ -298,7 +298,7 @@ app.get("/login/info/google/:email", async (req, res) => {
 })
 
 // ======= MANAGER API REQUESTS FOR INVENTORY INFORMATION ==========
-app.get("/manager/inventory", async (req, res) => {
+app.get("/api/manager/inventory", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM inventory");
     res.json(rows);
@@ -309,7 +309,7 @@ app.get("/manager/inventory", async (req, res) => {
   }
 })
 
-app.get("/manager/employee", async (req, res) => {
+app.get("/api/manager/employee", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM employee WHERE employee.title!=\'Manager\'");
     res.json(rows);
@@ -319,7 +319,7 @@ app.get("/manager/employee", async (req, res) => {
   }
 })
 
-app.post("/manager/api/new-request", async (req, res) => {
+app.post("/api/manager/api/new-request", async (req, res) => {
   const { item_name, quantity, request_id } = req.body;
   const reqIdQuery = "SELECT request_id FROM inventory_requests ORDER BY request_id DESC LIMIT 1;"
   const insertReqQuery = "INSERT INTO inventory_requests (item_name, quantity, request_id) VALUES($1, $2, $3)"
@@ -338,7 +338,7 @@ app.post("/manager/api/new-request", async (req, res) => {
   }
 })
 
-app.post("/manager/api/delete-request", async(req, res) => {
+app.post("/api/manager/api/delete-request", async(req, res) => {
   const {item_name, quantity, request_id} = req.body;
   const deleteReqQuery = "DELETE FROM inventory_requests WHERE request_id=" + request_id;
   try {
@@ -350,7 +350,7 @@ app.post("/manager/api/delete-request", async(req, res) => {
   }
 })
 
-app.post("/manager/api/new-employee", async(req, res) => {
+app.post("/api/manager/api/new-employee", async(req, res) => {
   const {empid, fname, lname, title, email, password} = req.body; 
   const empIdQuery = "SELECT empid FROM employee ORDER BY empid DESC LIMIT 1;";
   const insertEmpQuery = "INSERT INTO employee (empid, fname, lname, title, email, password) VALUES($1, $2, $3, $4, $5, $6)"
@@ -368,7 +368,7 @@ app.post("/manager/api/new-employee", async(req, res) => {
   }
 })
 
-app.post("/manager/api/delete-employee", async(req, res) => {
+app.post("/api/manager/api/delete-employee", async(req, res) => {
   const {empid, fname, lname, title, email, password} = req.body; 
   const deleteEmpQuery = "DELETE FROM employee WHERE empid=" + empid;
   try {
@@ -380,7 +380,7 @@ app.post("/manager/api/delete-employee", async(req, res) => {
   }
 })
 
-app.post("/manager/api/add-menu", async(req, res) => {
+app.post("/api/manager/api/add-menu", async(req, res) => {
   const {name, category, price, lprice} = req.body; 
   console.log(name);
   const menuIdQuery = "SELECT menuid FROM menu ORDER BY menuid DESC LIMIT 1;";
@@ -420,7 +420,7 @@ app.post("/manager/api/add-menu", async(req, res) => {
   }
 })
 
-app.post("/manager/api/del-menu", async(req, res) => {
+app.post("/api/manager/api/del-menu", async(req, res) => {
   const {name, category, price, lprice} = req.body; 
   let deleteMenuQuery = '';
   if(category == "Y"){
@@ -440,7 +440,7 @@ app.post("/manager/api/del-menu", async(req, res) => {
   }
 })
 
-app.get("/manager/inventory_requests", async (req, res) => {
+app.get("/api/manager/inventory_requests", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM inventory_requests");
     res.json(rows);
@@ -450,7 +450,7 @@ app.get("/manager/inventory_requests", async (req, res) => {
   }
 })
 
-app.post("/manager/api/orders_data", async (req, res) => {
+app.post("/api/manager/api/orders_data", async (req, res) => {
   const { datesSelected } = req.body;
   // Casting all passed dates to Date datatype.
   casted_dates = [];
@@ -483,7 +483,7 @@ app.post("/manager/api/orders_data", async (req, res) => {
   }
 })
 
-app.get("/translate/:text", async(req, res) => {
+app.get("/api/translate/:text", async(req, res) => {
   try {
     result = await translateText(req.params.text, 'es');
     res.json(result[0]);
@@ -493,7 +493,7 @@ app.get("/translate/:text", async(req, res) => {
   }
 })
 
-app.get("/translateEnglish/:text", async(req, res) => {
+app.get("/api/translateEnglish/:text", async(req, res) => {
   try {
     result = await translateText(req.params.text, 'en');
     res.json(result[0]);

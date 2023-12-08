@@ -53,7 +53,7 @@ export default {
     TextSlider
   },
   setup() {
-    const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000" : "";
+    const apiRedirect = (window.location.href.slice(0,17) == "http://localhost:") ? "http://localhost:3000/api" : "/api";
     const router = useRouter()
     const globalData = inject('globalTextMod');
     const email = ref('');
