@@ -78,7 +78,7 @@ export default {
             // Create API Request to request dats.
             const dataRequestAPI = apiRedirect + "/manager/api/orders_data";
             try {
-                const response = await axios.post(dataRequestAPI, this.axiosAPIBody);
+                const response = await axios.get(dataRequestAPI, this.axiosAPIBody);
                 
                 let data = response.data.result;
                 this.plotGraph(data);
