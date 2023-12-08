@@ -380,6 +380,66 @@ app.post("/manager/api/delete-employee", async(req, res) => {
   }
 })
 
+app.post("/manager/api/add-menu", async(req, res) => {
+  const {name, category, price, lprice} = req.body; 
+  console.log(name);
+  const menuIdQuery = "SELECT menuid FROM menu ORDER BY menuid DESC LIMIT 1;";
+  const invIdQuery = "SELECT inventoryid FROM menu ORDER BY inventoryid DESC LIMIT 1;";
+
+
+  const insertMenuQuery = "INSERT INTO menu ( menuid, inventoryid, name, category, price) VALUES($1, $2, $3, $4, $5)";
+
+  try {
+    // Get new empid from db.
+    let menuIdResponse = await pool.query(menuIdQuery);
+    let invIdResponse = await pool.query(invIdQuery);
+
+    let menuId = menuIdResponse.rows[0].menuid + 1;
+    let invId = invIdResponse.rows[0].inventoryid + 1;
+
+
+
+    if(category == "topping" || category == "merchandise"){
+      await pool.query(
+        insertMenuQuery,
+        [menuId, invId, name, category, price]);
+    }
+    else {
+      await pool.query(
+        insertMenuQuery,
+        [menuId, invId, name + "_M", category, price]);
+  
+      await pool.query(
+          insertMenuQuery,
+          [menuId + 1, invId, name + "_L", category, lprice]);
+    }
+    res.status(201).send("Employee addes successfully");
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
+app.post("/manager/api/del-menu", async(req, res) => {
+  const {name, category, price, lprice} = req.body; 
+  let deleteMenuQuery = '';
+  if(category == "Y"){
+     deleteMenuQuery = "DELETE FROM menu WHERE name IN ('" + name + "_M', '" + name + "_L')";
+  }
+  else{
+     deleteMenuQuery = "DELETE FROM menu WHERE name = '" + name + "'";
+  }
+  console.log(name);
+  console.log(deleteMenuQuery);
+  try {
+    await pool.query(deleteMenuQuery);
+    res.status(201).send("Menu Item deleted succesfully");
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).json('Server Error');
+  }
+})
+
 app.get("/manager/inventory_requests", async (req, res) => {
   try {
     const { rows } = await pool.query("SELECT * FROM inventory_requests");

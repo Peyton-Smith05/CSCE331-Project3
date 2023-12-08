@@ -47,6 +47,36 @@
             <input type="text" v-model="empId" placeholder="1234">
         </div>
     </InventoryPopup>
+    <InventoryPopup v-if="addMenuPopUp" :closePopup=" () => handleaddMenu()">
+        <h2 style="font-weight: bolder;">Add a menu Item</h2>
+        <div class="popup-entry" style="display: flex;">
+            <label>Item Name:</label>
+            <input type="text" v-model="menuName" placeholder="Green Tea">
+        </div>
+        <div class="popup-entry" style="display: flex;">
+            <label>Category:</label>
+            <input type="text" v-model="menuCategory" placeholder="Classic">
+        </div>
+        <div class="popup-entry" style="display: flex;">
+            <label>Price:</label>
+            <input type="text" v-model="menuPrice" placeholder="1.0">
+        </div>
+        <div class="popup-entry" style="display: flex;">
+            <label>Large Price:</label>
+            <input type="text" v-model="menuLPrice" placeholder="1.5">
+        </div>
+    </InventoryPopup>
+    <InventoryPopup v-if="delMenuPopUp" :closePopup=" () => handledelMenu()">
+        <h2 style="font-weight: bolder;">Delete a Menu Item</h2>
+        <div class="popup-entry" style="display: flex;">
+            <label>Item Name:</label>
+            <input type="text" v-model="menuName" placeholder="Green Tea">
+        </div>
+        <div class="popup-entry" style="display: flex;">
+            <label>Drink? (Y/N):</label>
+            <input type="text" v-model="menuCategory" placeholder="Y">
+        </div>
+    </InventoryPopup>
 
     <div class="left-wrapper">
             <h3>Inventory</h3>
@@ -71,6 +101,7 @@
                     </tr>
                 </table>
             </div>
+            <MenuTable @add-menu-popup="openAddMenuPopup" @del-menu-popup="openDelMenuPopup" />
         </div>
         <div class="right-wrapper">
             <h3 id="request-title">Inventory Requests</h3>
@@ -133,6 +164,7 @@
 <script>
     // Importing Popups
     import InventoryPopup from "./InventoryPopup.vue"
+    import MenuTable from "./MenuTable.vue";
 
     import axios from 'axios';
 
@@ -140,6 +172,7 @@
     export default {
         components: {
             InventoryPopup,
+            MenuTable,
         },
         data() {
             return {
@@ -151,6 +184,8 @@
                 delInvPopup: false,
                 addEmpPopup: false,
                 delEmpPopup: false,
+                addMenuPopUp: false,
+                delMenuPopUp: false,
 
                 // Placeholder variables for employees
                 empId: '',
@@ -177,6 +212,17 @@
                     quantity: 0,
                     request_id: 0,
                 },
+
+                menuName: '',
+                menuPrice: 0.0,
+                menuLPrice: 0.0,
+                menuCategory: '',
+                menuTemplate: {
+                    name: '',
+                    price: 0.0,
+                    lprice: 0.0,
+                    category: '',
+                }
             }
         },
         created() {
@@ -194,6 +240,14 @@
                     console.error(err);
                     this.err = 'Failed to load inventory.';
                 }
+            },
+            openAddMenuPopup() {
+            // Set the addMenuPopUp variable to true when Add Employee is clicked in Menu.vue
+                this.addMenuPopUp = true;
+            },
+            openDelMenuPopup() {
+            // Set the addMenuPopUp variable to true when Add Employee is clicked in Menu.vue
+                this.delMenuPopUp = true;
             },
             async getInvRequestData() {
                 const invRequest_request = apiRedirect + "/manager/inventory_requests";
@@ -281,8 +335,37 @@
                     console.error(err);
                     err = "Could not insert new employee.";
                 }
-                this.delEmpPopup = !this.delEmpPopup
-            }
+                this.delEmpPopup = !this.delEmpPopup;
+            },
+
+            async handleaddMenu() {
+                const API = apiRedirect + "/manager/api/add-menu";
+                try {
+                    this.menuTemplate.name = this.menuName;
+                    this.menuTemplate.price = this.menuPrice;
+                    this.menuTemplate.lprice = this.menuLPrice;
+                    this.menuTemplate.category = this.menuCategory;
+
+                    const response = await axios.post(API, this.menuTemplate);
+                } catch(err) {
+                    console.error(err);
+                    err = "Could not insert new employee.";
+                }
+                this.addMenuPopUp = false;
+            },
+
+            async handledelMenu() {
+                const API = apiRedirect + "/manager/api/del-menu";
+                try {
+                    this.menuTemplate.name = this.menuName;
+                    this.menuTemplate.category = this.menuCategory;
+                    const response = await axios.post(API, this.menuTemplate);
+                } catch(err) {
+                    console.error(err);
+                    err = "Could not insert new employee.";
+                }
+                this.delMenuPopUp = false;
+            },
 
         },
     }
@@ -294,7 +377,7 @@
     }
     
     .left-wrapper h3 {
-        top: 20vh;
+        top: 12vh;
         left: 10vw;
         position: relative;
         font-size: larger;
@@ -305,9 +388,9 @@
         position: relative;
         background: #ccc;
         border: 20px solid #cccc;
-        top: 20vh;
+        top: 12vh;
         left: 10vw;
-        max-height: 65vh;
+        max-height: 35vh;
         max-width: 35vw;
         overflow-y: scroll;
     }
